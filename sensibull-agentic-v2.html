@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sensibull — agentic</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F0F2F5;--surface:#FFFFFF;--border:#E2E4E9;--border2:#C8CDD8;
+  --text:#1A1D2E;--muted:#6B7280;--dim:#9CA3AF;--hint:#C5C9D4;
+  --blue:#0052CC;--blue-lt:#E6F0FF;--blue-md:#B3D0FF;
+  --green:#00875A;--green-lt:#E3FCEF;--green-md:#ABF5D1;
+  --red:#DE350B;--red-lt:#FFEBE6;--red-md:#FFBDAD;
+  --amber:#FF8B00;--amber-lt:#FFF0B3;--amber-md:#FFE380;
+  --purple:#6554C0;--purple-lt:#EAE6FF;
+  --font:'Inter',system-ui,sans-serif;--mono:'SF Mono','Fira Mono',monospace;
+  --r:4px;--rl:6px;--rxl:8px;
+  --sh:0 1px 2px rgba(9,30,66,.08),0 0 0 1px rgba(9,30,66,.04);
+  --sh-md:0 4px 12px rgba(9,30,66,.12),0 0 0 1px rgba(9,30,66,.06);
+}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;min-height:100vh;line-height:1.4}
+#wrap{display:flex;min-height:100vh}
+#sb{width:204px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+#topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:48px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;flex-shrink:0}
+#content{padding:16px;flex:1;overflow-y:auto;max-height:calc(100vh - 100px)}
+.sb-brand{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sb-logo-s{font-size:20px;font-weight:700;color:var(--blue);letter-spacing:-1px}
+.sb-logo{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-.4px}
+.sb-badge{font-size:9px;padding:2px 5px;border-radius:3px;background:var(--blue);color:#fff;font-weight:600;letter-spacing:.4px}
+.sb-sec{padding:10px 14px 3px;font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--hint);font-weight:500}
+.sb-link{display:flex;align-items:center;gap:8px;padding:7px 12px;margin:1px 6px;border-radius:var(--r);cursor:pointer;color:var(--muted);font-size:12px;transition:all .12s;user-select:none}
+.sb-link:hover{background:#F4F5F7;color:var(--text)}
+.sb-link.on{background:var(--blue-lt);color:var(--blue);font-weight:500}
+.sb-link svg{width:13px;height:13px;flex-shrink:0;opacity:.65}
+.sb-link.on svg{opacity:1}
+.sb-ct{margin-left:auto;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:600}
+.ct-r{background:var(--red-lt);color:var(--red)}.ct-b{background:var(--blue-lt);color:var(--blue)}.ct-g{background:var(--green-lt);color:var(--green)}
+.sb-footer{margin-top:auto;padding:10px;border-top:1px solid var(--border)}
+.agent-pill{display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--green-lt);border:1px solid var(--green-md);border-radius:var(--rl);cursor:pointer}
+.ag-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.ag-label{font-size:11px;color:var(--green);font-weight:500}
+.ag-sub{font-size:9px;color:var(--green);opacity:.7}
+.tb-sym{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:3px;cursor:pointer}
+.tb-sym:hover{background:var(--bg)}
+.tb-sym-n{font-size:12px;font-weight:600}
+.tb-sym-p{font-size:12px;font-weight:500;font-family:var(--mono)}
+.tb-sym-c{font-size:10px;font-family:var(--mono)}
+.tb-div{width:1px;height:18px;background:var(--border)}
+.tb-stat{display:flex;flex-direction:column;padding:0 6px}
+.tb-sl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.3px}
+.tb-sv{font-size:11px;font-weight:500;font-family:var(--mono)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.live-ind{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--green);font-weight:600;letter-spacing:.3px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+.kill-btn{padding:4px 10px;border-radius:3px;border:1px solid var(--red-md);background:var(--red-lt);color:var(--red);font-size:10px;font-weight:600;cursor:pointer;letter-spacing:.3px;transition:all .15s;font-family:var(--font)}
+.kill-btn:hover{background:var(--red);color:#fff}
+.kill-btn.on{background:var(--red);color:#fff;animation:pulse-r 1.5s infinite}
+@keyframes pulse-r{0%,100%{box-shadow:0 0 0 0 rgba(222,53,11,.3)}50%{box-shadow:0 0 0 4px rgba(222,53,11,0)}}
+.tb-avatar{width:26px;height:26px;border-radius:50%;background:var(--blue-lt);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+.up{color:var(--green)}.dn{color:var(--red)}.warn{color:var(--amber)}.nu{color:var(--muted)}
+.page{display:none}.page.on{display:block}
+.pg-hdr{margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.pg-title{font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.3px}
+.pg-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden;margin-bottom:12px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);background:#FAFBFC}
+.card-title{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:500}
+.card-body{padding:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.met{background:#FAFBFC;border:1px solid var(--border);border-radius:var(--r);padding:9px 11px}
+.met-l{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;font-weight:500}
+.met-v{font-size:15px;font-weight:600;font-family:var(--mono);letter-spacing:-.3px}
+.ac{border-radius:var(--rl);padding:13px;margin-bottom:12px;border:1px solid}
+.ac-info{background:var(--blue-lt);border-color:var(--blue-md)}
+.ac-warn{background:var(--amber-lt);border-color:var(--amber-md)}
+.ac-alert{background:var(--red-lt);border-color:var(--red-md)}
+.ac-ok{background:var(--green-lt);border-color:var(--green-md)}
+.ac-neutral{background:#FAFBFC;border-color:var(--border)}
+.ac-hd{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px}
+.ac-ico{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ico-b{background:var(--blue);color:#fff}.ico-a{background:var(--amber);color:#fff}
+.ico-r{background:var(--red);color:#fff}.ico-g{background:var(--green);color:#fff}
+.ico-p{background:var(--purple);color:#fff}
+.ac-agent{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.ac-info .ac-agent{color:var(--blue)}.ac-warn .ac-agent{color:var(--amber)}
+.ac-alert .ac-agent{color:var(--red)}.ac-ok .ac-agent{color:var(--green)}.ac-neutral .ac-agent{color:var(--muted)}
+.ac-ttl{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.ac-body{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:9px}
+.rbox{background:rgba(255,255,255,.7);border-radius:var(--r);padding:8px 11px;margin-bottom:9px;border:1px solid rgba(0,0,0,.06)}
+.rb-lbl{font-size:9px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.rb-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:3px;font-size:11px;line-height:1.5}
+.rb-row:last-child{margin-bottom:0}
+.rb-dot{width:4px;height:4px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:4px}
+.ac-acts{display:flex;gap:6px;flex-wrap:wrap}
+.btn{padding:5px 11px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--muted);font-family:var(--font);font-size:11px;cursor:pointer;transition:all .12s}
+.btn:hover{border-color:var(--text);color:var(--text);background:#F4F5F7}
+.btn-p{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:500}
+.btn-p:hover{background:#0043A8;border-color:#0043A8;color:#fff}
+.btn-g{background:var(--green-lt);border-color:var(--green-md);color:var(--green);font-weight:500}
+.btn-g:hover{background:var(--green);border-color:var(--green);color:#fff}
+.btn-r{background:var(--red-lt);border-color:var(--red-md);color:var(--red);font-weight:500}
+.btn-r:hover{background:var(--red);border-color:var(--red);color:#fff}
+.btn-sm{padding:3px 9px;font-size:10px}
+.btn-xs{padding:2px 6px;font-size:9px}
+.btn-gh{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-gh:hover{background:#F4F5F7;border-color:var(--border);color:var(--text)}
+.pill{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:500;display:inline-block;white-space:nowrap}
+.pill-g{background:var(--green-lt);color:var(--green)}.pill-r{background:var(--red-lt);color:var(--red)}
+.pill-a{background:var(--amber-lt);color:var(--amber)}.pill-b{background:var(--blue-lt);color:var(--blue)}
+.pill-p{background:var(--purple-lt);color:var(--purple)}.pill-d{background:#F4F5F7;color:var(--muted)}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{padding:7px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);border-bottom:1px solid var(--border);font-weight:500;background:#FAFBFC;white-space:nowrap}
+.tbl th.r,.tbl td.r{text-align:right}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}.tbl tr:hover td{background:#FAFBFC}
+.mono{font-family:var(--mono);font-size:11px}
+.oc-wrap{overflow-x:auto}
+.oc{width:100%;border-collapse:collapse;font-size:10px;min-width:820px}
+.oc th{padding:6px 7px;font-size:8px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);border-bottom:2px solid var(--border);font-weight:500;text-align:center;white-space:nowrap}
+.oc th.ch{background:#FFF8F8}.oc th.ph{background:#F5F9FF}.oc th.sh{background:#FAFBFC}
+.oc td{padding:5px 7px;border-bottom:1px solid var(--border);text-align:center;font-family:var(--mono);font-size:10px;cursor:pointer}
+.oc tr:hover td{background:#FAFBFC}
+.oc td.ce{background:#FFFCFC}.oc td.pe{background:#F8FBFF}
+.oc td.sk{background:#FAFBFC;font-weight:600;color:var(--text);font-size:11px}
+.oc tr.atm td{background:#FFFBF0!important}.oc tr.atm td.sk{background:#FFF5D6!important;color:var(--amber)}
+.oib{position:relative;height:14px;background:#F4F5F7;border-radius:2px;overflow:hidden;min-width:50px}
+.oif{position:absolute;top:0;height:100%;border-radius:2px}
+.oif-c{right:0;background:rgba(222,53,11,.2)}.oif-p{left:0;background:rgba(0,135,90,.2)}
+.oin{position:absolute;top:50%;transform:translateY(-50%);font-size:8px;font-weight:500}
+.oin-c{right:3px;color:var(--red)}.oin-p{left:3px;color:var(--green)}
+.strat-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+.sc{padding:4px 10px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all .12s;font-family:var(--font)}
+.sc.on{background:var(--blue-lt);border-color:var(--blue);color:var(--blue);font-weight:500}
+.sc:hover:not(.on){background:#F4F5F7;color:var(--text)}
+.leg-hdr{display:grid;grid-template-columns:52px 36px 68px 68px 50px 22px;gap:4px;margin-bottom:4px;font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
+.leg-row{display:grid;grid-template-columns:52px 36px 68px 68px 50px 22px;gap:4px;align-items:center;margin-bottom:4px}
+.li{padding:4px 5px;background:var(--bg);border:1px solid var(--border2);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;width:100%;outline:none;transition:border-color .12s}
+.li:focus{border-color:var(--blue);background:#fff}
+.del-b{width:20px;height:20px;border:1px solid var(--border2);border-radius:3px;background:transparent;color:var(--dim);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .12s;padding:0}
+.del-b:hover{border-color:var(--red);color:var(--red);background:var(--red-lt)}
+.exec-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:#FAFBFC}
+.gk-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
+.gk-cell{background:#fff;padding:11px 10px}
+.gk-n{font-size:9px;color:var(--muted);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.gk-v{font-size:17px;font-weight:600;font-family:var(--mono);margin-bottom:1px}
+.gk-d{font-size:10px;color:var(--dim)}
+.dbar{height:3px;background:var(--border);border-radius:2px;position:relative;overflow:hidden;margin-top:4px}
+.dfill{position:absolute;top:0;height:100%;border-radius:2px;transition:all .3s}
+.dmid{position:absolute;left:50%;top:-1px;width:1px;height:5px;background:var(--border2)}
+.sp-card{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:10px;cursor:pointer;transition:border-color .12s}
+.sp-card:hover{border-color:var(--blue-md)}.sp-card.sel{border-color:var(--blue);border-width:1.5px}
+.sp-hd{padding:10px 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.sp-name{font-size:12px;font-weight:500}
+.sp-body{padding:11px 13px}
+.sp-mets{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:9px}
+.sp-m-l{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
+.sp-m-v{font-size:13px;font-weight:600;font-family:var(--mono)}
+.legs-strip{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.lc{font-size:9px;padding:3px 7px;border-radius:3px;font-family:var(--mono);font-weight:500}
+.lc-s{background:var(--red-lt);color:var(--red)}.lc-b{background:var(--green-lt);color:var(--green)}
+.ap-strip{background:var(--blue-lt);border:1px solid var(--blue-md);border-radius:var(--rl);padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:4px}
+.ap-info{font-size:12px;font-weight:500;color:var(--blue)}
+.ap-sub{font-size:10px;color:var(--blue);opacity:.7;margin-top:2px}
+.adj-opt{border:1px solid var(--border);border-radius:var(--rl);padding:11px 13px;margin-bottom:7px;cursor:pointer;transition:all .12s}
+.adj-opt:hover{border-color:var(--blue-md)}.adj-opt.sel{border-color:var(--blue);border-width:1.5px;background:var(--blue-lt)}
+.adj-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.adj-t{font-size:12px;font-weight:500}.adj-ms{display:flex;gap:12px}
+.adj-ml{font-size:9px;color:var(--dim);margin-bottom:1px}.adj-mv{font-size:12px;font-weight:500;font-family:var(--mono)}
+.watch-r{display:grid;grid-template-columns:88px 100px 1fr 70px 80px;gap:8px;align-items:start;padding:9px 13px;border-bottom:1px solid var(--border)}
+.watch-r:last-child{border-bottom:none}.watch-r:hover{background:#FAFBFC}
+.cr{display:flex;align-items:center;gap:4px;font-size:10px;margin-bottom:2px}
+.jcard{border:1px solid var(--border);border-radius:var(--rl);padding:13px;margin-bottom:9px}
+.jcard-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.pc{display:inline-flex;align-items:center;font-size:9px;padding:2px 6px;border-radius:8px;margin-right:3px;margin-bottom:3px;font-weight:500}
+.pc-w{background:var(--amber-lt);color:var(--amber)}.pc-g{background:var(--green-lt);color:var(--green)}.pc-b{background:var(--blue-lt);color:var(--blue)}
+.tl{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:9px}
+.tl-left{display:flex;flex-direction:column;align-items:center;width:26px;flex-shrink:0}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:11px;border:1.5px solid}
+.d-b{background:var(--blue);border-color:var(--blue)}.d-g{background:var(--green);border-color:var(--green)}
+.d-a{background:var(--amber);border-color:var(--amber)}.d-p{background:var(--purple);border-color:var(--purple)}.d-r{background:var(--red);border-color:var(--red)}
+.tl-line{width:1px;background:var(--border);flex:1;min-height:8px}
+.tl-right{padding:7px 0 13px;flex:1}
+.tl-t{font-size:9px;color:var(--dim);font-family:var(--mono);margin-bottom:2px}
+.tl-ti{font-size:12px;font-weight:500;margin-bottom:2px}
+.tl-d{font-size:11px;color:var(--muted);line-height:1.5}
+.tl-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.ob-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rxl);padding:22px;max-width:560px;margin:0 auto;box-shadow:var(--sh-md)}
+.ob-prog{display:flex;gap:3px;margin-bottom:18px}
+.ob-seg{height:3px;border-radius:2px;flex:1}
+.ob-seg.done{background:var(--blue)}.ob-seg.cur{background:var(--blue-md)}.ob-seg.pend{background:var(--border)}
+.ob-ttl{font-size:16px;font-weight:600;letter-spacing:-.3px;margin-bottom:4px}
+.ob-sub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.ob-opt{border:1px solid var(--border);border-radius:var(--rl);padding:9px 12px;margin-bottom:6px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:9px}
+.ob-opt:hover{border-color:var(--blue-md);background:var(--blue-lt)}
+.ob-opt.sel{border-color:var(--blue);border-width:1.5px;background:var(--blue-lt)}
+.ob-chk{width:15px;height:15px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;transition:all .12s}
+.ob-opt.sel .ob-chk{background:var(--blue);border-color:var(--blue);color:#fff}
+.ob-lbl{font-size:12px;font-weight:500}.ob-desc{font-size:10px;color:var(--muted);margin-top:1px}
+.ob-inp{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:12px;color:var(--text);background:#fff;outline:none;transition:border-color .12s}
+.ob-inp:focus{border-color:var(--blue)}
+.ob-inp-l{font-size:11px;font-weight:500;color:var(--text);margin-bottom:4px;display:block}
+.rp{background:var(--blue-lt);border:1px solid var(--blue-md);border-radius:var(--rl);padding:11px 13px;margin-top:13px}
+.rp-t{font-size:9px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.rp-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:11px}
+.rp-k{color:var(--muted);min-width:130px}
+.bt-p{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:11px 13px}
+.bt-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:9px}
+.bt-sv{font-size:14px;font-weight:600;font-family:var(--mono);margin-bottom:1px;text-align:center}
+.bt-sl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.3px;text-align:center}
+.gs-card{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:7px}
+.gs-hd{padding:9px 13px;background:#FAFBFC;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.gs-hd-t{font-size:12px;font-weight:500;color:var(--text)}
+.gs-body{padding:11px 13px;display:none}
+.gs-body.open{display:block}
+.step-list{display:flex;flex-direction:column;gap:8px}
+.step-item{display:flex;gap:8px;align-items:flex-start}
+.step-n{width:18px;height:18px;border-radius:50%;background:var(--blue-lt);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;margin-top:1px}
+.step-t{font-size:11px;color:var(--muted);line-height:1.5}
+.step-t strong{color:var(--text);font-weight:500}
+.at{width:100%;border-collapse:collapse;font-size:11px}
+.at th{padding:6px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);border-bottom:1px solid var(--border);font-weight:500}
+.at td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;font-size:11px}
+.at tr:last-child td{border-bottom:none}
+.modal-bg{position:fixed;inset:0;background:rgba(9,30,66,.4);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px}
+.modal{background:#fff;border-radius:var(--rxl);padding:20px;width:100%;max-width:440px;box-shadow:var(--sh-md)}
+.modal-t{font-size:14px;font-weight:600;letter-spacing:-.2px;margin-bottom:2px}
+.modal-s{font-size:11px;color:var(--muted);margin-bottom:12px}
+.modal-f{margin-bottom:10px}
+.modal-l{font-size:11px;font-weight:500;margin-bottom:3px;display:block}
+.modal-i{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg);outline:none;transition:border-color .12s}
+.modal-i:focus{border-color:var(--blue);background:#fff}
+.hidden{display:none!important}
+.oi-row{display:grid;grid-template-columns:1fr 54px 1fr;gap:3px;align-items:center;margin-bottom:3px}
+.oi-ce,.oi-pe{height:16px;border-radius:2px;overflow:hidden;background:#FFF5F5;position:relative}
+.oi-pe{background:#F0F9FF}
+.oi-fr{position:absolute;right:0;top:0;height:100%;background:rgba(222,53,11,.22)}
+.oi-fl{position:absolute;left:0;top:0;height:100%;background:rgba(0,135,90,.22)}
+.oi-nl{font-size:8px;font-family:var(--mono);position:absolute;z-index:1;top:50%;transform:translateY(-50%)}
+.oi-nl-r{right:3px;color:var(--red)}.oi-nl-l{left:3px;color:var(--green)}
+.oi-sk{text-align:center;font-size:10px;font-weight:600;padding:0 2px}
+.oi-sk.atm{color:var(--amber)}
+.oi-hdr{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);text-align:center;padding:4px 0}
+.chat-bar{background:#fff;border-top:1px solid var(--border);padding:9px 16px;display:flex;gap:7px;align-items:center;flex-shrink:0}
+.chat-i{flex:1;padding:7px 12px;border:1px solid var(--border);border-radius:14px;font-family:var(--font);font-size:12px;color:var(--text);background:var(--bg);outline:none;transition:all .12s}
+.chat-i:focus{border-color:var(--blue);background:#fff}
+.chat-send{width:28px;height:28px;border-radius:50%;background:var(--blue);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-send:hover{background:#0043A8}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+<div id="wrap">
+<!-- SIDEBAR -->
+<div id="sb">
+  <div class="sb-brand">
+    <div class="sb-logo-s">s</div>
+    <span class="sb-logo">sensibull</span>
+    <span class="sb-badge">AGENT</span>
+  </div>
+  <div class="sb-sec">Pre-trade</div>
+  <div class="sb-link" onclick="nav('setup')">
+    <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4.5v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Strategy setup
+  </div>
+  <div class="sb-link on" onclick="nav('brief')">
+    <svg viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 6h6M4 8.5h3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Morning brief<span class="sb-ct ct-b">2</span>
+  </div>
+  <div class="sb-link" onclick="nav('watchlist')">
+    <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5 12 5.5 9.5 8l.5 3.5L7 10l-3 1.5.5-3.5L2 5.5l3.5-.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    Watchlist<span class="sb-ct ct-g">1</span>
+  </div>
+  <div class="sb-sec">Analysis</div>
+  <div class="sb-link" onclick="nav('chain')">
+    <svg viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 5h5M4.5 7h5M4.5 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Option chain
+  </div>
+  <div class="sb-link" onclick="nav('oi')">
+    <svg viewBox="0 0 14 14" fill="none"><rect x="1.5" y="9" width="3" height="4" rx=".5" fill="currentColor" opacity=".4"/><rect x="5.5" y="6" width="3" height="7" rx=".5" fill="currentColor" opacity=".65"/><rect x="9.5" y="3" width="3" height="10" rx=".5" fill="currentColor"/></svg>
+    Open interest
+  </div>
+  <div class="sb-sec">Trade</div>
+  <div class="sb-link" onclick="nav('builder')">
+    <svg viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v6M4 7h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Strategy builder
+  </div>
+  <div class="sb-link" onclick="nav('recs')">
+    <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5l1.3 2.6L11.5 4.6 9.25 6.8l.55 3.2L7 8.5l-2.8 1.5.55-3.2L2.5 4.6l3.2-.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    AI recommendations<span class="sb-ct ct-r">2</span>
+  </div>
+  <div class="sb-link" onclick="nav('positions')">
+    <svg viewBox="0 0 14 14" fill="none"><path d="M1.5 10l3-3.5 2.5 2.5L11 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Positions<span class="sb-ct ct-r">!</span>
+  </div>
+  <div class="sb-link" onclick="nav('orders')">
+    <svg viewBox="0 0 14 14" fill="none"><path d="M2.5 3.5h9M2.5 7h6M2.5 10.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Orders
+  </div>
+  <div class="sb-sec">Review</div>
+  <div class="sb-link" onclick="nav('analytics')">
+    <svg viewBox="0 0 14 14" fill="none"><path d="M1.5 10.5l3-3.5 2.5 2L10.5 3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Analytics
+  </div>
+  <div class="sb-link" onclick="nav('journal')">
+    <svg viewBox="0 0 14 14" fill="none"><rect x="2.5" y="1.5" width="9" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5.5h4M5 8h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Trade journal
+  </div>
+  <div class="sb-link" onclick="nav('logs')">
+    <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4.5V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="9.5" r=".65" fill="currentColor"/></svg>
+    Agent logs
+  </div>
+  <div class="sb-link" onclick="nav('guide')">
+    <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M5.5 5.5c0-1 .65-1.5 1.5-1.5s1.5.5 1.5 1.5c0 .8-.5 1.2-1.5 1.5V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="10.5" r=".55" fill="currentColor"/></svg>
+    Guide
+  </div>
+  <div class="sb-footer">
+    <div class="agent-pill" onclick="nav('logs')">
+      <div class="ag-dot"></div>
+      <div><div class="ag-label">Agent active</div><div class="ag-sub">4 processes running</div></div>
+    </div>
+  </div>
+</div>
+<!-- MAIN -->
+<div id="main">
+<div id="topbar">
+  <div class="tb-sym">
+    <span class="tb-sym-n">NIFTY</span>
+    <span class="tb-sym-p up" id="nifty-p">23,847</span>
+    <span class="tb-sym-c up" id="nifty-c">+0.42%</span>
+  </div>
+  <div class="tb-div"></div>
+  <div class="tb-sym">
+    <span class="tb-sym-n">BANKNIFTY</span>
+    <span class="tb-sym-p dn" id="bnf-p">51,204</span>
+    <span class="tb-sym-c dn">-0.18%</span>
+  </div>
+  <div class="tb-div"></div>
+  <div class="tb-stat"><div class="tb-sl">India VIX</div><div class="tb-sv warn">14.8</div></div>
+  <div class="tb-stat"><div class="tb-sl">IV Pct</div><div class="tb-sv warn">76th</div></div>
+  <div class="tb-stat"><div class="tb-sl">PCR</div><div class="tb-sv nu">0.88</div></div>
+  <div class="tb-stat"><div class="tb-sl">Day P&amp;L</div><div class="tb-sv up" id="day-pnl">+₹1,240</div></div>
+  <div class="tb-right">
+    <div class="live-ind"><div class="live-dot"></div>LIVE</div>
+    <div style="font-size:9px;color:var(--dim);font-family:var(--mono)" id="clock">09:34</div>
+    <button class="kill-btn" id="kill-btn" onclick="toggleKill()">KILL SWITCH</button>
+    <div class="tb-avatar">AK</div>
+  </div>
+</div>
+<div id="content">
+<!-- PAGE: MORNING BRIEF -->
+<div class="page on" id="page-brief">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Morning brief</div><div class="pg-sub">Thursday, 27 Apr 2026 · Compiled by Agent at 08:47 AM · 28 min to market open</div></div>
+    <button class="btn btn-sm btn-gh" onclick="nav('chain')">View option chain →</button>
+  </div>
+  <div class="ac ac-info">
+    <div class="ac-hd"><div class="ac-ico ico-b">A</div><div><div class="ac-agent">Tradl Agent · Scanner · 08:47 AM</div><div class="ac-ttl">Mild premium-selling environment. 2 setups match your ruleset — NIFTY Iron Condor is higher conviction.</div></div></div>
+    <div class="ac-body">SGX Nifty flat overnight (+0.1%). No major Indian macro today. IV at 76th percentile — premium selling favoured. PCR 0.88 = mild bearish skew. Max pain for Thursday expiry at 23,700 (147pts above spot). OI walls confirmed at 24,000 CE and 23,500 PE. Both setups pass your entry conditions.</div>
+    <div class="rbox">
+      <div class="rb-lbl">Agent reasoning chain</div>
+      <div class="rb-row"><div class="rb-dot"></div><div><strong>IV 76th pct →</strong> Premiums inflated. Historical data: short-premium strategies have 67% win rate when IV pct > 75th.</div></div>
+      <div class="rb-row"><div class="rb-dot"></div><div><strong>PCR 0.88 + OI walls at 24000 CE / 23500 PE →</strong> Range-bound expectation confirmed by market positioning. Iron condor within these walls is optimal.</div></div>
+      <div class="rb-row"><div class="rb-dot"></div><div><strong>Thursday expiry →</strong> Theta accelerating. ~4.8 Theta points decay today vs 2.1 next week. Short-premium positions benefit immediately.</div></div>
+      <div class="rb-row"><div class="rb-dot"></div><div><strong>Your ruleset →</strong> Entry condition met (IV > 65th pct). ₹50,000 risk limit → Iron Condor fits (max loss ₹3,750). Short Strangle exceeds limit (unlimited loss).</div></div>
+    </div>
+    <div class="ac-acts">
+      <button class="btn btn-p btn-sm" onclick="nav('recs')">Review agent setups →</button>
+      <button class="btn btn-sm" onclick="nav('builder')">Open strategy builder</button>
+      <button class="btn btn-sm btn-gh">Ask agent anything</button>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-hdr"><span class="card-title">Setup 1 — NIFTY</span><span class="pill pill-b">High conviction</span></div>
+      <div class="card-body">
+        <div style="font-size:13px;font-weight:500;margin-bottom:5px">Iron Condor · Thu 27 Apr</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:9px">Sell 24000 CE + 24100 CE wing / Sell 23500 PE + 23400 PE wing. OI walls at both strikes confirm expected range.</div>
+        <div class="g2" style="gap:6px;margin-bottom:9px">
+          <div class="met"><div class="met-l">Max profit</div><div class="met-v up">₹6,250</div></div>
+          <div class="met"><div class="met-l">Max loss</div><div class="met-v dn">₹3,750</div></div>
+          <div class="met"><div class="met-l">Win prob</div><div class="met-v">68%</div></div>
+          <div class="met"><div class="met-l">Margin</div><div class="met-v nu">₹42K</div></div>
+        </div>
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="nav('recs')">Review this setup →</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-hdr"><span class="card-title">Setup 2 — BANKNIFTY</span><span class="pill pill-a">Moderate · Risk warning</span></div>
+      <div class="card-body">
+        <div style="font-size:13px;font-weight:500;margin-bottom:5px">Short Strangle · Thu 27 Apr</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:9px">Sell 51800 CE + 50600 PE. High premium, IV crush potential. <strong style="color:var(--red)">Unlimited loss — exceeds your ₹50K limit.</strong></div>
+        <div class="g2" style="gap:6px;margin-bottom:9px">
+          <div class="met"><div class="met-l">Max profit</div><div class="met-v up">₹4,800</div></div>
+          <div class="met"><div class="met-l">Max loss</div><div class="met-v dn">Unlimited</div></div>
+          <div class="met"><div class="met-l">Win prob</div><div class="met-v">71%</div></div>
+          <div class="met"><div class="met-l">Margin</div><div class="met-v warn">₹58K</div></div>
+        </div>
+        <button class="btn btn-sm" style="width:100%" onclick="nav('recs')">Review anyway</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="card-hdr"><div class="card-title">Market context — 09:04 AM</div></div>
+    <div class="card-body">
+      <div class="g3">
+        <div>
+          <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500;margin-bottom:6px">Global cues</div>
+          <div style="font-size:11px;line-height:1.9">SGX Nifty <span class="up mono">+0.1%</span><br>Dow Jones <span class="up mono">+0.3%</span><br>Nasdaq <span class="up mono">+0.5%</span><br>Crude Oil <span class="dn mono">-0.8%</span><br>USD/INR <span class="nu mono">83.42</span></div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500;margin-bottom:6px">Options data</div>
+          <div style="font-size:11px;line-height:1.9">PCR <span class="warn mono">0.88</span> — mild bearish<br>Max pain <span class="mono">23,700</span><br>IV percentile <span class="warn mono">76th</span><br>ATM IV <span class="mono">14.8%</span><br>Straddle price <span class="mono">₹320</span></div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500;margin-bottom:6px">NIFTY key levels</div>
+          <div style="font-size:11px;line-height:1.9">
+            Resistance <span class="mono">24,000</span> <span class="pill pill-r" style="font-size:7px">OI wall</span><br>
+            Spot <span class="warn mono">23,847</span><br>
+            Support <span class="mono">23,600</span><br>
+            Support <span class="mono">23,500</span> <span class="pill pill-r" style="font-size:7px">OI wall</span><br>
+            Max pain <span class="mono">23,700</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- PAGE: STRATEGY SETUP -->
+<div class="page" id="page-setup">
+  <div class="pg-hdr"><div><div class="pg-title">Strategy setup</div><div class="pg-sub">One-time setup · Agent uses this ruleset to personalise every recommendation.</div></div></div>
+  <div class="ob-card">
+    <div class="ob-prog"><div class="ob-seg done"></div><div class="ob-seg done"></div><div class="ob-seg done"></div><div class="ob-seg cur"></div><div class="ob-seg pend"></div></div>
+    <div class="ob-ttl">What's your preferred strategy style?</div>
+    <div class="ob-sub">The agent filters all setups through your style. Update anytime in settings.</div>
+    <div class="ob-opt sel" onclick="selOb(this)"><div class="ob-chk">✓</div><div><div class="ob-lbl">Premium seller</div><div class="ob-desc">Short strangles, iron condors, credit spreads. Profit from time decay and IV crush.</div></div></div>
+    <div class="ob-opt" onclick="selOb(this)"><div class="ob-chk"></div><div><div class="ob-lbl">Directional buyer</div><div class="ob-desc">Long calls, puts, debit spreads. Bet on a move with defined maximum risk.</div></div></div>
+    <div class="ob-opt" onclick="selOb(this)"><div class="ob-chk"></div><div><div class="ob-lbl">Mixed / situational</div><div class="ob-desc">Adapts to conditions — sell in high IV, buy in low IV.</div></div></div>
+    <div style="margin-top:12px">
+      <div style="margin-bottom:8px"><label class="ob-inp-l">Max capital at risk per trade (₹)</label><input class="ob-inp" type="text" value="50,000"></div>
+      <div style="margin-bottom:8px"><label class="ob-inp-l">Max daily loss limit (₹)</label><input class="ob-inp" type="text" value="10,000"></div>
+      <div style="margin-bottom:8px"><label class="ob-inp-l">Preferred instruments</label>
+        <select class="ob-inp"><option>NIFTY + BANKNIFTY (weekly)</option><option>NIFTY only</option><option>BANKNIFTY only</option></select>
+      </div>
+      <div style="margin-bottom:8px"><label class="ob-inp-l">Exit positions by (time)</label><input class="ob-inp" type="text" value="3:00 PM"></div>
+    </div>
+    <div class="rp">
+      <div class="rp-t">Agent-generated ruleset preview</div>
+      <div class="rp-row"><span class="rp-k">Strategy preference</span><span>Premium selling (condors, strangles)</span></div>
+      <div class="rp-row"><span class="rp-k">Entry condition</span><span>IV percentile > 65th</span></div>
+      <div class="rp-row"><span class="rp-k">Max risk per trade</span><span>₹50,000</span></div>
+      <div class="rp-row"><span class="rp-k">Daily kill-switch at</span><span>₹10,000 loss (auto-triggered)</span></div>
+      <div class="rp-row"><span class="rp-k">Instruments</span><span>NIFTY + BANKNIFTY weekly</span></div>
+      <div class="rp-row"><span class="rp-k">Sit-out condition</span><span>IV < 40th pct or major event day</span></div>
+      <div class="rp-row"><span class="rp-k">Adjustment threshold</span><span>Delta > 0.35 on any short leg</span></div>
+      <div class="rp-row"><span class="rp-k">Exit cutoff</span><span>3:00 PM (agent reminder at 2:50 PM)</span></div>
+    </div>
+    <div style="display:flex;gap:7px;justify-content:flex-end;margin-top:14px">
+      <button class="btn">Back</button>
+      <button class="btn btn-p" onclick="nav('brief')">Confirm ruleset →</button>
+    </div>
+  </div>
+</div>
+<!-- PAGE: WATCHLIST -->
+<div class="page" id="page-watchlist">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Watchlist</div><div class="pg-sub">Agent monitors compound conditions. You're alerted only when all conditions align.</div></div>
+    <button class="btn btn-p btn-sm">+ Add watch</button>
+  </div>
+  <div class="ac ac-ok">
+    <div class="ac-hd"><div class="ac-ico ico-g">A</div><div><div class="ac-agent">Agent · Watchlist monitor · 09:03 AM</div><div class="ac-ttl">NIFTY Iron Condor — all 4 conditions met. Setup ready now.</div></div></div>
+    <div class="ac-body">IV crossed 75th pct at 08:52 AM. PCR confirmed neutral (0.88). OI walls at 24000 CE (8.2L) and 23500 PE (7.8L) strengthened overnight. No events in next 48h. All your entry criteria are met.</div>
+    <div class="ac-acts">
+      <button class="btn btn-g btn-sm" onclick="nav('recs')">Build this trade →</button>
+      <button class="btn btn-sm">Dismiss</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">Active watches — 3</div></div>
+    <div style="display:grid;grid-template-columns:90px 105px 1fr 75px 85px;gap:8px;padding:6px 13px;background:#FAFBFC;border-bottom:1px solid var(--border)">
+      <div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500">Instrument</div>
+      <div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500">Setup</div>
+      <div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500">Compound conditions</div>
+      <div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500">Status</div>
+      <div></div>
+    </div>
+    <div class="watch-r">
+      <div><div style="font-size:12px;font-weight:600">NIFTY</div><div style="font-size:9px;color:var(--muted)">Thu expiry</div></div>
+      <div style="font-size:11px">Iron Condor</div>
+      <div>
+        <div class="cr"><span style="color:var(--green)">✓</span>IV > 75th pct (currently 76th)</div>
+        <div class="cr"><span style="color:var(--green)">✓</span>PCR neutral 0.8–1.1 (0.88)</div>
+        <div class="cr"><span style="color:var(--green)">✓</span>OI walls confirmed at strikes</div>
+        <div class="cr"><span style="color:var(--green)">✓</span>No event next 48h</div>
+      </div>
+      <div><span class="pill pill-g" style="font-size:9px;padding:3px 7px">Ready</span></div>
+      <div><button class="btn btn-p btn-xs" onclick="nav('recs')">Trade →</button></div>
+    </div>
+    <div class="watch-r">
+      <div><div style="font-size:12px;font-weight:600">BANKNIFTY</div><div style="font-size:9px;color:var(--muted)">Thu expiry</div></div>
+      <div style="font-size:11px">Short Strangle</div>
+      <div>
+        <div class="cr"><span style="color:var(--green)">✓</span>IV > 70th pct</div>
+        <div class="cr"><span style="color:var(--amber)">◑</span>PCR slightly high (1.04 vs target < 1.0)</div>
+        <div class="cr"><span style="color:var(--green)">✓</span>OI walls confirmed</div>
+        <div class="cr"><span style="color:var(--green)">✓</span>No event next 48h</div>
+      </div>
+      <div><span class="pill pill-a" style="font-size:9px;padding:3px 7px">3/4 met</span></div>
+      <div><button class="btn btn-xs">Watching</button></div>
+    </div>
+    <div class="watch-r">
+      <div><div style="font-size:12px;font-weight:600">RELIANCE</div><div style="font-size:9px;color:var(--muted)">Monthly</div></div>
+      <div style="font-size:11px">Bull Call Spread</div>
+      <div>
+        <div class="cr"><span style="color:var(--red)">✗</span>IV < 60th pct (currently 42nd)</div>
+        <div class="cr"><span style="color:var(--red)">✗</span>Price near support zone</div>
+        <div class="cr"><span style="color:var(--green)">✓</span>Results cleared</div>
+      </div>
+      <div><span class="pill pill-d" style="font-size:9px;padding:3px 7px">1/3 met</span></div>
+      <div><button class="btn btn-xs">Watching</button></div>
+    </div>
+  </div>
+</div>
+<!-- PAGE: OPTION CHAIN -->
+<div class="page" id="page-chain">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Option chain</div><div class="pg-sub">NIFTY · Thursday 27 Apr · Spot 23,847</div></div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap">
+      <button class="sc on" id="sym-nifty" onclick="setSym(this)">NIFTY</button>
+      <button class="sc" id="sym-bnf" onclick="setSym(this)">BANKNIFTY</button>
+      <button class="sc on btn-sm" id="exp-1" onclick="setExp(this)">27 Apr</button>
+      <button class="sc btn-sm" id="exp-2" onclick="setExp(this)">04 May</button>
+      <button class="sc btn-sm" id="exp-3" onclick="setExp(this)">08 May</button>
+    </div>
+  </div>
+  <div class="ac ac-info" style="margin-bottom:12px">
+    <div class="ac-hd"><div class="ac-ico ico-b">A</div><div><div class="ac-agent">Agent · Scanner · Live</div><div class="ac-ttl">Strong OI walls at 24000 CE (8.2L) and 23500 PE (7.8L). PCR 0.88 confirms neutral-bearish skew. Iron Condor between these walls: 68% historical win rate in similar setups.</div></div></div>
+    <div class="ac-acts">
+      <button class="btn btn-p btn-sm" onclick="nav('recs')">Build Iron Condor from this chain →</button>
+      <button class="btn btn-sm btn-gh" onclick="nav('oi')">View OI analysis</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">NIFTY option chain · 27 Apr · <span class="up mono">23,847</span></div>
+      <span style="font-size:9px;color:var(--muted)">Click any strike to add to strategy builder</span>
+    </div>
+    <div class="oc-wrap">
+      <table class="oc" id="oc-tbl">
+        <thead>
+          <tr>
+            <th class="ch" colspan="6">CALLS (CE)</th>
+            <th class="sh">STRIKE</th>
+            <th class="ph" colspan="6">PUTS (PE)</th>
+          </tr>
+          <tr>
+            <th class="ch">OI (L)</th><th class="ch">ChgOI</th><th class="ch">IV%</th><th class="ch">LTP</th><th class="ch">Delta</th><th class="ch">Bid/Ask</th>
+            <th class="sh" style="min-width:70px">Strike</th>
+            <th class="ph">Bid/Ask</th><th class="ph">Delta</th><th class="ph">LTP</th><th class="ph">IV%</th><th class="ph">ChgOI</th><th class="ph">OI (L)</th>
+          </tr>
+        </thead>
+        <tbody id="oc-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- PAGE: OPEN INTEREST -->
+<div class="page" id="page-oi">
+  <div class="pg-hdr"><div><div class="pg-title">Open interest analysis</div><div class="pg-sub">OI concentration reveals where institutional money is positioned. Walls = likely support/resistance.</div></div></div>
+  <div class="ac ac-info">
+    <div class="ac-hd"><div class="ac-ico ico-b">A</div><div><div class="ac-agent">Agent · OI analysis</div><div class="ac-ttl">Max pain 23,700. Call wall at 24,000 (8.2L). Put wall at 23,500 (7.8L). Market historically gravitates toward max pain by Thursday close.</div></div></div>
+    <div class="ac-body">OI buildup at 24000 CE increased 12% overnight — new conviction entering at that strike. Put writing at 23500 PE stable. Net interpretation: range 23,500–24,000 likely to hold today.</div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">OI by strike — NIFTY Thu</div></div>
+      <div class="card-body" style="padding:10px 13px">
+        <div style="display:grid;grid-template-columns:1fr 58px 1fr;gap:4px;margin-bottom:4px">
+          <div class="oi-hdr">Calls (CE)</div><div class="oi-hdr">Strike</div><div class="oi-hdr">Puts (PE)</div>
+        </div>
+        <div id="oi-grid"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">IV term structure</div></div>
+      <div class="card-body">
+        <div style="position:relative;height:150px"><canvas id="iv-chart" role="img" aria-label="IV term structure chart">IV chart</canvas></div>
+        <div style="margin-top:10px;font-size:11px;line-height:1.8;color:var(--muted)">
+          Current ATM IV: <span class="warn mono">14.8%</span> · Percentile: <span class="warn mono">76th</span><br>
+          IV Rank: <span class="warn mono">0.62</span> · Historical avg: <span class="mono">12.1%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- PAGE: STRATEGY BUILDER -->
+<div class="page" id="page-builder">
+  <div class="pg-hdr"><div><div class="pg-title">Strategy builder</div><div class="pg-sub">Build, visualise and execute options strategies. Agent optimises strikes and runs backtest.</div></div></div>
+  <div class="ac ac-neutral">
+    <div class="ac-hd"><div class="ac-ico ico-b">A</div><div><div class="ac-agent">Agent · Strategist · suggestion</div><div class="ac-ttl">Iron Condor loaded with agent-optimised strikes based on current OI and IV.</div></div></div>
+    <div class="ac-body">Strikes chosen at highest OI concentration: 24000 CE sell (Delta 0.22, 78% prob OTM) and 23500 PE sell (Delta -0.18, 82% prob OTM). Wing width 100pts balances premium vs margin. Run backtest before executing.</div>
+    <div class="ac-acts">
+      <button class="btn btn-sm btn-gh" onclick="runBacktest()">Run instant backtest</button>
+      <button class="btn btn-sm btn-gh" onclick="openModify()">Adjust strikes manually</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">Strategy templates</div></div>
+    <div style="padding:12px 13px">
+      <div class="strat-chips" id="strat-chips">
+        <button class="sc on" onclick="loadStrat('ic',this)">Iron Condor</button>
+        <button class="sc" onclick="loadStrat('ss',this)">Short Strangle</button>
+        <button class="sc" onclick="loadStrat('bcs',this)">Bull Call Spread</button>
+        <button class="sc" onclick="loadStrat('bps',this)">Bear Put Spread</button>
+        <button class="sc" onclick="loadStrat('sd',this)">Short Straddle</button>
+        <button class="sc" onclick="loadStrat('cu',this)">+ Custom</button>
+      </div>
+      <div style="background:#FAFBFC;border-radius:3px;padding:9px;margin-bottom:11px;border:1px solid var(--border)">
+        <div class="leg-hdr"><span>Action</span><span>Type</span><span>Strike</span><span>Expiry</span><span>Qty</span><span></span></div>
+        <div id="legs-cont"></div>
+        <button class="btn btn-sm btn-gh" style="margin-top:5px;border-style:dashed" onclick="addLeg()">+ Add leg</button>
+      </div>
+      <div class="g4" style="margin-bottom:10px">
+        <div class="met"><div class="met-l">Max profit</div><div class="met-v up" id="b-profit">—</div></div>
+        <div class="met"><div class="met-l">Max loss</div><div class="met-v dn" id="b-loss">—</div></div>
+        <div class="met"><div class="met-l">Win prob</div><div class="met-v nu" id="b-pop">—</div></div>
+        <div class="met"><div class="met-l">Theta/day</div><div class="met-v up" id="b-theta">—</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px">
+        <label style="font-size:9px;color:var(--dim);white-space:nowrap;font-weight:500;text-transform:uppercase;letter-spacing:.4px">Spot at expiry</label>
+        <input type="range" id="spot-slider" min="22500" max="24500" step="25" value="23847" oninput="updSlider(this.value)" style="flex:1;accent-color:var(--amber)">
+        <span style="font-size:11px;font-family:var(--mono);color:var(--amber);width:58px;text-align:right" id="slider-out">₹23,847</span>
+      </div>
+      <div style="position:relative;width:100%;height:150px;margin-bottom:5px">
+        <canvas id="payoff-canvas" role="img" aria-label="Payoff diagram showing profit and loss zones at different Nifty prices">Payoff diagram.</canvas>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:9px;color:var(--dim)">
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:14px;height:2px;background:var(--green);display:inline-block;border-radius:1px"></span>Profit</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:14px;height:2px;background:var(--red);display:inline-block;border-radius:1px"></span>Loss</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:2px;height:8px;background:var(--amber);display:inline-block"></span>Spot</span>
+        <span style="margin-left:auto;font-family:var(--mono);font-size:10px" id="pnl-spot"></span>
+      </div>
+    </div>
+    <div id="bt-panel" class="hidden" style="padding:0 13px 11px">
+      <div class="bt-p">
+        <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Instant backtest — Iron Condor · IV >75th pct · 43 occurrences · 2yr history</div>
+        <div class="bt-row">
+          <div><div class="bt-sv up">67%</div><div class="bt-sl">Win rate</div></div>
+          <div><div class="bt-sv up">₹3,840</div><div class="bt-sl">Avg profit</div></div>
+          <div><div class="bt-sv dn">₹6,200</div><div class="bt-sl">Avg loss</div></div>
+          <div><div class="bt-sv warn">₹9,400</div><div class="bt-sl">Max drawdown</div></div>
+          <div><div class="bt-sv up">1.4×</div><div class="bt-sl">Profit factor</div></div>
+        </div>
+        <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:2px">
+          <div style="width:67%;height:100%;background:var(--green);border-radius:2px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim)"><span>29 wins</span><span>14 losses</span></div>
+      </div>
+    </div>
+    <div class="exec-bar">
+      <button class="btn btn-p" onclick="nav('recs')">Send to AI recommendations</button>
+      <button class="btn" onclick="runBacktest()">Run backtest</button>
+      <button class="btn btn-gh">Save draft</button>
+      <span style="margin-left:auto;font-size:9px;color:var(--dim);font-family:var(--mono)" id="exec-note">PAPER MODE · 4 legs</span>
+    </div>
+  </div>
+</div>
+<!-- PAGE: AI RECOMMENDATIONS -->
+<div class="page" id="page-recs">
+  <div class="pg-hdr"><div><div class="pg-title">AI recommendations</div><div class="pg-sub">Agent-generated trade proposals. Review reasoning, modify if needed, then approve.</div></div></div>
+  <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Awaiting your decision — 2 pending</div>
+  <!-- Rec 1 -->
+  <div class="sp-card sel" id="rec-1" onclick="selRec(1)">
+    <div class="sp-hd">
+      <div><div class="sp-name">Iron Condor · NIFTY · Thu 27 Apr</div><div style="font-size:9px;color:var(--muted);margin-top:1px">Recommended · fits your ₹50K risk limit · Backtest: 67% win rate over 43 occurrences</div></div>
+      <div style="display:flex;gap:4px"><span class="pill pill-g">Selected</span><span class="pill pill-b">67% win rate</span><span class="pill pill-d">Pending approval</span></div>
+    </div>
+    <div class="sp-body">
+      <div class="rbox" style="margin-bottom:9px">
+        <div class="rb-lbl">Why this strategy · why these exact strikes</div>
+        <div class="rb-row"><div class="rb-dot"></div><div><strong>24000 CE (sell):</strong> Heaviest call OI (8.2L contracts). Delta 0.22 → 78% probability expiring worthless. 153pts above spot — comfortable buffer.</div></div>
+        <div class="rb-row"><div class="rb-dot"></div><div><strong>23500 PE (sell):</strong> Heaviest put OI (7.8L). Delta -0.18 → 82% probability expiring worthless. Max pain anchor at 23,700 — gravitational pull helps.</div></div>
+        <div class="rb-row"><div class="rb-dot"></div><div><strong>100pt wings:</strong> Max loss ₹3,750 — well within your ₹50,000 limit. Profit factor 1.4× across 43 historical instances under similar IV conditions.</div></div>
+        <div class="rb-row"><div class="rb-dot" style="background:var(--green)"></div><div><strong>Ruleset check passed:</strong> IV > 65th pct ✓ · Max loss ≤ ₹50K ✓ · Preferred instrument ✓ · No event risk ✓</div></div>
+      </div>
+      <div class="bt-p" style="margin-bottom:9px">
+        <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Backtest — 43 similar setups in last 2 years</div>
+        <div class="bt-row">
+          <div><div class="bt-sv up">67%</div><div class="bt-sl">Win rate</div></div>
+          <div><div class="bt-sv up">₹3,840</div><div class="bt-sl">Avg profit</div></div>
+          <div><div class="bt-sv dn">₹6,200</div><div class="bt-sl">Avg loss</div></div>
+          <div><div class="bt-sv warn">₹9,400</div><div class="bt-sl">Max drawdown</div></div>
+          <div><div class="bt-sv up">1.4×</div><div class="bt-sl">Profit factor</div></div>
+        </div>
+      </div>
+      <div class="sp-mets">
+        <div><div class="sp-m-l">Max profit</div><div class="sp-m-v up">₹6,250</div></div>
+        <div><div class="sp-m-l">Max loss</div><div class="sp-m-v dn">₹3,750</div></div>
+        <div><div class="sp-m-l">Margin</div><div class="sp-m-v nu">₹42,000</div></div>
+        <div><div class="sp-m-l">Theta/day</div><div class="sp-m-v up">+₹420</div></div>
+        <div><div class="sp-m-l">Win prob</div><div class="sp-m-v">68%</div></div>
+      </div>
+      <div class="legs-strip">
+        <span class="lc lc-s">SELL NIFTY 24000 CE ×50 @86.5</span>
+        <span class="lc lc-b">BUY NIFTY 24100 CE ×50 @43.2</span>
+        <span class="lc lc-s">SELL NIFTY 23500 PE ×50 @78.0</span>
+        <span class="lc lc-b">BUY NIFTY 23400 PE ×50 @39.5</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-gh" onclick="openModify();event.stopPropagation()">Modify strikes / qty</button>
+        <button class="btn btn-sm btn-gh" onclick="nav('builder');event.stopPropagation()">Open in builder</button>
+      </div>
+    </div>
+  </div>
+  <!-- Rec 2 -->
+  <div class="sp-card" id="rec-2" onclick="selRec(2)">
+    <div class="sp-hd">
+      <div><div class="sp-name">Short Strangle · NIFTY · Thu 27 Apr</div><div style="font-size:9px;color:var(--muted);margin-top:1px">Higher premium · Unlimited loss · Exceeds your ₹50K risk limit</div></div>
+      <div style="display:flex;gap:4px"><span class="pill pill-a">Risk warning</span><span class="pill pill-b">71% win rate</span></div>
+    </div>
+    <div class="sp-body">
+      <div class="rbox" style="margin-bottom:9px">
+        <div class="rb-lbl">Agent note on risk</div>
+        <div class="rb-row"><div class="rb-dot" style="background:var(--amber)"></div><div>This strategy has unlimited downside if Nifty moves sharply against you. It exceeds your stated ₹50,000 risk limit. Agent recommends Iron Condor. Only consider if you can actively monitor and have a defined mental stop-loss of ~₹8,000.</div></div>
+      </div>
+      <div class="sp-mets">
+        <div><div class="sp-m-l">Max profit</div><div class="sp-m-v up">₹8,225</div></div>
+        <div><div class="sp-m-l">Max loss</div><div class="sp-m-v dn">Unlimited</div></div>
+        <div><div class="sp-m-l">Margin</div><div class="sp-m-v warn">₹58,000</div></div>
+        <div><div class="sp-m-l">Theta/day</div><div class="sp-m-v up">+₹680</div></div>
+        <div><div class="sp-m-l">Win prob</div><div class="sp-m-v">71%</div></div>
+      </div>
+      <div class="legs-strip">
+        <span class="lc lc-s">SELL NIFTY 24000 CE ×50 @86.5</span>
+        <span class="lc lc-s">SELL NIFTY 23500 PE ×50 @78.0</span>
+      </div>
+    </div>
+  </div>
+  <div class="ap-strip">
+    <div><div class="ap-info">Ready to place — Iron Condor · 4 legs simultaneously · ₹42,000 margin</div><div class="ap-sub">Agent places all 4 legs as a basket order. You can cancel after seeing the order confirmation.</div></div>
+    <div style="display:flex;gap:6px"><button class="btn btn-sm" onclick="nav('brief')">Cancel</button><button class="btn btn-p btn-sm" onclick="approvePlace()">Approve &amp; place →</button></div>
+  </div>
+  <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:14px;margin-bottom:7px">History</div>
+  <div class="sp-card" style="opacity:.6;cursor:default">
+    <div class="sp-hd"><div><div class="sp-name">Short Strangle · BANKNIFTY · Wed 26 Apr</div><div style="font-size:9px;color:var(--muted);margin-top:1px">Executed at 10:18 AM · Session P&L: +₹3,750</div></div><span class="pill pill-g">Executed</span></div>
+  </div>
+</div>
+<!-- PAGE: POSITIONS -->
+<div class="page" id="page-positions">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Positions</div><div class="pg-sub">Agent monitoring active · Updated 3 sec ago · 4 open legs</div></div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span class="pill pill-g" style="font-size:10px;padding:3px 8px">Day P&L +₹1,240</span>
+      <button class="btn btn-r btn-sm">Exit all</button>
+    </div>
+  </div>
+  <!-- ALERT -->
+  <div class="ac ac-alert" id="adj-alert">
+    <div class="ac-hd"><div class="ac-ico ico-r">!</div><div><div class="ac-agent">Agent · Monitor · 11:23 AM · Action required</div><div class="ac-ttl">NIFTY Iron Condor — call side under pressure. Delta 0.38 (your threshold: 0.35). 3 adjustments modelled.</div></div></div>
+    <div class="ac-body">Nifty moved to 23,920 (+73pts in 30 min). Short 24000 CE delta drifted 0.22 → 0.38. Position outside expected range. 4h 7min to expiry — gamma accelerating. Every 10pt Nifty move now costs ~₹280 more than at entry.</div>
+    <div class="rbox">
+      <div class="rb-lbl">Situation analysis</div>
+      <div class="rb-row"><div class="rb-dot" style="background:var(--red)"></div><div><strong>Delta drift:</strong> 0.22 → 0.38. Nearing delta-0.5 territory. Material directional exposure.</div></div>
+      <div class="rb-row"><div class="rb-dot" style="background:var(--red)"></div><div><strong>Gamma acceleration:</strong> Near expiry, each ₹100pt Nifty move = ₹2,800 additional P&L impact vs entry.</div></div>
+      <div class="rb-row"><div class="rb-dot" style="background:var(--amber)"></div><div><strong>IV expansion:</strong> IV 14.8 → 15.4%. Modest, working against position.</div></div>
+      <div class="rb-row"><div class="rb-dot" style="background:var(--green)"></div><div><strong>Put side healthy:</strong> 23500 PE delta -0.12, collecting theta normally. Only call side needs action.</div></div>
+    </div>
+    <div class="ac-acts">
+      <button class="btn btn-r btn-sm" onclick="showAdj()">Review 3 adjustments →</button>
+      <button class="btn btn-sm">Hold for now</button>
+      <button class="btn btn-r btn-sm btn-gh">Exit full position</button>
+    </div>
+  </div>
+  <!-- ADJUSTMENT PANEL -->
+  <div id="adj-panel" class="hidden">
+    <div style="font-size:12px;font-weight:500;margin-bottom:8px">Choose an adjustment — agent modelled all 3 scenarios</div>
+    <div class="adj-opt sel" id="adj-1" onclick="selAdj(1)">
+      <div class="adj-hd"><div><div class="adj-t">Roll call side up — buy back 24000 CE, sell 24200 CE</div><div style="font-size:9px;color:var(--muted);margin-top:1px">Recommended · extends range 200pts · reduces delta to 0.18</div></div><span class="pill pill-b">Recommended</span></div>
+      <div class="adj-ms">
+        <div><div class="adj-ml">Cost</div><div class="adj-mv warn">₹1,250</div></div>
+        <div><div class="adj-ml">New max loss</div><div class="adj-mv dn">₹5,000</div></div>
+        <div><div class="adj-ml">New breakeven</div><div class="adj-mv">24,150</div></div>
+        <div><div class="adj-ml">Delta after</div><div class="adj-mv up">0.18</div></div>
+        <div><div class="adj-ml">Win prob after</div><div class="adj-mv">72%</div></div>
+      </div>
+    </div>
+    <div class="adj-opt" id="adj-2" onclick="selAdj(2)">
+      <div class="adj-hd"><div><div class="adj-t">Add hedge — buy 24000 CE ×25 (half quantity)</div><div style="font-size:9px;color:var(--muted);margin-top:1px">Conservative · reduces call exposure · keeps put side intact</div></div><span class="pill pill-a">Conservative</span></div>
+      <div class="adj-ms">
+        <div><div class="adj-ml">Cost</div><div class="adj-mv warn">₹2,160</div></div>
+        <div><div class="adj-ml">New max loss</div><div class="adj-mv dn">₹1,875</div></div>
+        <div><div class="adj-ml">New breakeven</div><div class="adj-mv">24,043</div></div>
+        <div><div class="adj-ml">Delta after</div><div class="adj-mv up">0.21</div></div>
+        <div><div class="adj-ml">Win prob after</div><div class="adj-mv">69%</div></div>
+      </div>
+    </div>
+    <div class="adj-opt" id="adj-3" onclick="selAdj(3)">
+      <div class="adj-hd"><div><div class="adj-t">Exit call spread — close 24000 CE + 24100 CE legs</div><div style="font-size:9px;color:var(--muted);margin-top:1px">Partial exit · converts to put-only position · frees call-side margin</div></div><span class="pill pill-d">Partial exit</span></div>
+      <div class="adj-ms">
+        <div><div class="adj-ml">Realised P&L</div><div class="adj-mv dn">-₹2,100</div></div>
+        <div><div class="adj-ml">Remaining pos</div><div class="adj-mv nu">Put spread only</div></div>
+        <div><div class="adj-ml">Margin released</div><div class="adj-mv up">₹21,000</div></div>
+        <div><div class="adj-ml">Delta after</div><div class="adj-mv up">-0.06</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;margin-top:4px"><button class="btn" onclick="hideAdj()">Cancel</button><button class="btn btn-p" onclick="hideAdj()">Approve adjustment →</button></div>
+  </div>
+  <!-- GREEKS -->
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">Portfolio Greeks</div><div class="live-ind"><div class="live-dot"></div>Live</div></div>
+    <div class="gk-row">
+      <div class="gk-cell"><div class="gk-n">Net Delta</div><div class="gk-v warn" id="g-delta">-14.2</div><div class="gk-d">Mild bearish exposure</div><div class="dbar"><div class="dfill" id="d-fill" style="width:14%;left:36%;background:var(--amber)"></div><div class="dmid"></div></div></div>
+      <div class="gk-cell"><div class="gk-n">Net Theta</div><div class="gk-v up" id="g-theta">+₹820</div><div class="gk-d">Earning per day</div></div>
+      <div class="gk-cell"><div class="gk-n">Net Vega</div><div class="gk-v dn" id="g-vega">-₹1,240</div><div class="gk-d">IV expansion risk</div></div>
+      <div class="gk-cell"><div class="gk-n">Net Gamma</div><div class="gk-v warn" id="g-gamma">-0.008</div><div class="gk-d">Accelerating near expiry</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">Open positions — NIFTY Iron Condor · 27 Apr</div></div>
+    <table class="tbl">
+      <thead><tr><th>Symbol</th><th>B/S</th><th>Qty</th><th class="r">Avg</th><th class="r">LTP</th><th class="r">P&amp;L</th><th class="r">Delta</th><th class="r">Theta</th><th class="r">IV%</th><th>Status</th><th></th></tr></thead>
+      <tbody id="pos-tbody"></tbody>
+    </table>
+  </div>
+  <div id="alerts-area"></div>
+</div>
+<!-- PAGE: ORDERS -->
+<div class="page" id="page-orders">
+  <div class="pg-hdr"><div><div class="pg-title">Orders</div><div class="pg-sub">Agent placed all 4 legs simultaneously as basket. All filled in 1.2 seconds.</div></div></div>
+  <div class="ac ac-ok">
+    <div class="ac-hd"><div class="ac-ico ico-g">A</div><div><div class="ac-agent">Agent · Executor · 09:18 AM</div><div class="ac-ttl">Iron Condor basket executed — 4 legs filled simultaneously. Slippage ₹0.40 adverse (within ₹2.00 threshold). No partial fills.</div></div></div>
+    <div class="ac-body">All 4 legs placed as single basket order at 09:18:04 AM. Execution time 1.2 seconds. No orphaned positions. Slippage within acceptable range. Strategy entered exactly as modelled.</div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">Order book — today</div><div style="display:flex;gap:4px"><span class="pill pill-g">4 filled</span><span class="pill pill-d">0 pending</span></div></div>
+    <table class="tbl">
+      <thead><tr><th>Time</th><th>Symbol</th><th>B/S</th><th>Qty</th><th class="r">Expected</th><th class="r">Fill</th><th class="r">Slippage</th><th>Status</th><th>Placed by</th></tr></thead>
+      <tbody id="order-tbody"></tbody>
+    </table>
+  </div>
+</div>
+<!-- PAGE: ANALYTICS -->
+<div class="page" id="page-analytics">
+  <div class="pg-hdr"><div><div class="pg-title">Analytics</div><div class="pg-sub">Session performance breakdown.</div></div></div>
+  <div class="g5" style="margin-bottom:12px">
+    <div class="met"><div class="met-l">Total orders</div><div class="met-v nu">6</div></div>
+    <div class="met"><div class="met-l">Fill rate</div><div class="met-v up">100%</div></div>
+    <div class="met"><div class="met-l">Theta collected</div><div class="met-v up">+₹4,100</div></div>
+    <div class="met"><div class="met-l">Total slippage</div><div class="met-v warn">₹252</div></div>
+    <div class="met"><div class="met-l">Execution score</div><div class="met-v up">94/100</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">P&amp;L evolution since entry</div></div>
+      <div class="card-body" style="padding:12px"><div style="position:relative;height:150px"><canvas id="pnl-chart" role="img" aria-label="P&L line chart showing growth from 0 to +3750 rupees">P&L chart.</canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Agent action timeline</div></div>
+      <div class="card-body" style="padding:10px 13px"><div class="tl" id="analytics-tl"></div></div>
+    </div>
+  </div>
+</div>
+<!-- PAGE: JOURNAL -->
+<div class="page" id="page-journal">
+  <div class="pg-hdr"><div><div class="pg-title">Trade journal</div><div class="pg-sub">Auto-generated by agent after each session. You read it — you don't write it.</div></div></div>
+  <div class="ac ac-info">
+    <div class="ac-hd"><div class="ac-ico ico-b">A</div><div><div class="ac-agent">Agent · Post-session debrief · Today 3:42 PM</div><div class="ac-ttl">Session: +₹1,240 · 1 rule deviation detected · Adjustment response time improved to 8 min</div></div></div>
+    <div class="ac-body">Good session. Theta worked as expected. Adjustment at 11:31 AM was timely — rolling the call side up preserved the structure. However, you held positions until 3:18 PM vs your stated 3:00 PM cutoff. This is the 4th time in 6 sessions. The extra 18 minutes contributed ₹0 additional P&L on average across these instances.</div>
+    <div class="rbox">
+      <div class="rb-lbl">Patterns detected this week</div>
+      <div class="rb-row"><div class="rb-dot" style="background:var(--amber)"></div><div><strong>Late exit (4/6 sessions):</strong> You exit after 3 PM cutoff 67% of sessions. Avg P&L impact: neutral to slightly negative. Likely cause: anxiety about leaving money on the table.</div></div>
+      <div class="rb-row"><div class="rb-dot" style="background:var(--green)"></div><div><strong>Adjustment response improved:</strong> From 22 min avg last week → 8 min today. Acting on agent alerts faster. Keep this up.</div></div>
+      <div class="rb-row"><div class="rb-dot" style="background:var(--red)"></div><div><strong>Stop-loss override (Wed 26):</strong> Overrode stop-loss once this week. Cost extra ₹1,400 vs rule-based exit. 1 occurrence tracked.</div></div>
+    </div>
+    <div class="ac-acts"><button class="btn btn-sm">Update ruleset based on these patterns</button><button class="btn btn-sm">Acknowledge</button></div>
+  </div>
+  <div style="margin-bottom:9px">
+    <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">This week's behaviour patterns</div>
+    <span class="pc pc-w">Late exit (4/6 sessions)</span>
+    <span class="pc pc-g">Faster adjustment response ↑</span>
+    <span class="pc pc-b">Iron Condor 3/4 wins this week</span>
+    <span class="pc pc-w">Stop-loss override ×1 (Wed)</span>
+  </div>
+  <div class="jcard">
+    <div class="jcard-hd"><div><div style="font-size:12px;font-weight:500">Today · Thu 27 Apr · NIFTY Iron Condor</div><div style="font-size:9px;color:var(--muted)">Adjusted once at 11:31 AM (rolled call side up) · Exited 03:18 PM (18 min late)</div></div><div style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--green)">+₹1,240</div></div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.6">Entered 09:18 AM. Agent flagged delta drift at 11:23 AM. Rolled call side up (cost ₹1,250). Put side collected full theta. Exited slightly late vs personal rule. Max pain magnetic effect worked as modelled at 23,700.</div>
+  </div>
+  <div class="jcard">
+    <div class="jcard-hd"><div><div style="font-size:12px;font-weight:500">Wed 26 Apr · BANKNIFTY Short Strangle</div><div style="font-size:9px;color:var(--muted)">Stop-loss override · Held too long · Agent flagged risk 14 min before the move</div></div><div style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--red)">-₹2,800</div></div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.6">RBI statement surprise at 10:12 AM caused 180pt BNF spike. Agent alerted at 09:58 AM (14 min before). Overrode stop-loss and held — cost extra ₹1,400 vs rule-based exit. Deviation logged.</div>
+  </div>
+  <div class="jcard">
+    <div class="jcard-hd"><div><div style="font-size:12px;font-weight:500">Tue 25 Apr · NIFTY Iron Condor</div><div style="font-size:9px;color:var(--muted)">Clean session · No adjustments needed · Exited within cutoff</div></div><div style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--green)">+₹4,100</div></div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.6">Textbook. Entered 09:22 AM, exited 02:58 PM (within cutoff). IV crushed from 76th → 61st pct. All legs expired profitably. Zero ruleset deviations detected.</div>
+  </div>
+</div>
+<!-- PAGE: AGENT LOGS -->
+<div class="page" id="page-logs">
+  <div class="pg-hdr"><div><div class="pg-title">Agent logs</div><div class="pg-sub">Full audit trail of every agent action, decision, and reasoning this session.</div></div></div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">Today · Thu 27 Apr · Agent activity</div><div style="display:flex;gap:4px"><span class="pill pill-b">Scanner</span><span class="pill pill-p">Strategist</span><span class="pill pill-g">Executor</span><span class="pill pill-a">Monitor</span></div></div>
+    <div style="padding:13px"><div class="tl" id="logs-tl"></div></div>
+  </div>
+</div>
+<!-- PAGE: GUIDE -->
+<div class="page" id="page-guide">
+  <div class="pg-hdr"><div><div class="pg-title">Guide</div><div class="pg-sub">How to use this platform and what the agent does at each stage.</div></div></div>
+  <div class="ac ac-info" style="margin-bottom:14px">
+    <div class="ac-hd"><div class="ac-ico ico-b">?</div><div><div class="ac-agent">Orientation</div><div class="ac-ttl">This is Sensibull with an AI agent layer on top. The core platform — option chain, strategy builder, positions — is unchanged. The agent adds pre-trade intelligence, proactive monitoring, and post-trade learning.</div></div></div>
+  </div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:13px;font-weight:500;margin-bottom:9px;color:var(--text)">The 4 agent processes</div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-body" style="padding:0">
+        <table class="at">
+          <thead><tr><th>Agent</th><th>When it runs</th><th>What it does</th><th>Your role</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill pill-b">Scanner</span></td><td>Pre-market (8–9 AM) + throughout</td><td>Processes global cues, IV, OI. Identifies 2–3 setups matching your ruleset. Generates morning brief.</td><td>Read the brief. Nothing required.</td></tr>
+            <tr><td><span class="pill pill-p">Strategist</span></td><td>When a setup is ready</td><td>Picks optimal strikes using OI + IV + Delta. Runs instant backtest. Generates recommendation with full reasoning chain.</td><td>Review reasoning. Modify if needed. Approve or reject.</td></tr>
+            <tr><td><span class="pill pill-g">Executor</span></td><td>After you approve</td><td>Places all legs simultaneously as basket. Monitors fills. Resolves partial fills. Never leaves orphaned legs.</td><td>Nothing — agent handles execution.</td></tr>
+            <tr><td><span class="pill pill-a">Monitor</span></td><td>Continuously while positions open</td><td>Watches Greek drift, P&L, IV. Interrupts only at thresholds (e.g. Delta > 0.35). Models 3 adjustment scenarios when triggered.</td><td>Respond to alerts. Choose adjustment. Approve it.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:13px;font-weight:500;margin-bottom:9px;color:var(--text)">Your daily workflow</div>
+    <div class="gs-card">
+      <div class="gs-hd" onclick="toggleG(this)"><div style="display:flex;align-items:center;gap:7px"><span class="pill pill-b">Pre-market</span><span class="gs-hd-t">Before 9:15 AM — what to do</span></div><span style="margin-left:auto;font-size:9px;color:var(--dim)">3 steps</span></div>
+      <div class="gs-body">
+        <div class="step-list">
+          <div class="step-item"><div class="step-n">1</div><div class="step-t"><strong>Read the morning brief.</strong> Go to Morning Brief. The agent has already processed overnight data and identified today's setups. Read the 2 setup cards and the reasoning chain.</div></div>
+          <div class="step-item"><div class="step-n">2</div><div class="step-t"><strong>Verify in the option chain if you want.</strong> Go to Option Chain. The agent's reasoning references specific OI levels — you can verify them yourself here. Click any strike to add it to the builder.</div></div>
+          <div class="step-item"><div class="step-n">3</div><div class="step-t"><strong>Go to AI Recommendations.</strong> The agent has already structured the trade. Review the backtest (43 historical occurrences), check the reasoning, and either approve or click "Modify strikes" to change parameters before approving.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-hd" onclick="toggleG(this)"><div style="display:flex;align-items:center;gap:7px"><span class="pill pill-g">Market hours</span><span class="gs-hd-t">9:15 AM – 3:00 PM — what to do</span></div><span style="margin-left:auto;font-size:9px;color:var(--dim)">4 steps · Most important</span></div>
+      <div class="gs-body open">
+        <div class="step-list">
+          <div class="step-item"><div class="step-n">1</div><div class="step-t"><strong>Approve the trade.</strong> On AI Recommendations, optionally modify strikes, then click "Approve &amp; place". The executor places all legs simultaneously as a basket. All 4 fill within seconds.</div></div>
+          <div class="step-item"><div class="step-n">2</div><div class="step-t"><strong>Let the agent monitor.</strong> Go to Positions. The agent now watches your Greeks continuously. You don't need to stare at the screen — the agent interrupts you if and only if action is needed.</div></div>
+          <div class="step-item"><div class="step-n">3</div><div class="step-t"><strong>Respond to adjustment alerts.</strong> When a red alert appears at the top of Positions, click "Review 3 adjustments". Each option shows cost, new max loss, new delta, and win probability after adjustment. Choose one and approve. The executor handles the rest.</div></div>
+          <div class="step-item"><div class="step-n">4</div><div class="step-t"><strong>Exit before your cutoff.</strong> Your ruleset has a 3:00 PM exit rule. The agent reminds you at 2:50 PM if positions are still open. Use "Exit all" or exit individual legs from the positions table.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-hd" onclick="toggleG(this)"><div style="display:flex;align-items:center;gap:7px"><span class="pill pill-a">Post-market</span><span class="gs-hd-t">After 3:30 PM — what to do</span></div><span style="margin-left:auto;font-size:9px;color:var(--dim)">2 steps</span></div>
+      <div class="gs-body">
+        <div class="step-list">
+          <div class="step-item"><div class="step-n">1</div><div class="step-t"><strong>Read the session debrief.</strong> Go to Trade Journal. Agent auto-generates what worked, what didn't, and whether you followed your ruleset. You read it — you don't write it.</div></div>
+          <div class="step-item"><div class="step-n">2</div><div class="step-t"><strong>Review weekly patterns.</strong> After 5+ sessions the agent surfaces behavioural patterns like "you exit too early on Thursdays" or "your adjustment response time improved 60% this week." These help you improve systematically without manual journaling.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:13px;font-weight:500;margin-bottom:9px;color:var(--text)">How to read a recommendation</div>
+    <div class="gs-card">
+      <div class="gs-hd" onclick="toggleG(this)"><span class="gs-hd-t">The 5 parts of every recommendation</span><span style="margin-left:auto" class="pill pill-b">Important</span></div>
+      <div class="gs-body">
+        <div class="step-list">
+          <div class="step-item"><div class="step-n">1</div><div class="step-t"><strong>Reasoning chain</strong> — why this strategy, why these specific strikes, why now. If the reasoning doesn't make sense to you, don't approve. The reasoning is the most important part — it's how you verify the agent's logic.</div></div>
+          <div class="step-item"><div class="step-n">2</div><div class="step-t"><strong>Backtest panel</strong> — historical performance of this exact setup under similar IV conditions. Win rate, avg profit/loss, max drawdown, profit factor. Based on real historical option chain data.</div></div>
+          <div class="step-item"><div class="step-n">3</div><div class="step-t"><strong>Metrics bar</strong> — live calculations: Max profit, Max loss, Margin required, Theta per day, Win probability. These update in real time from current option prices.</div></div>
+          <div class="step-item"><div class="step-n">4</div><div class="step-t"><strong>Legs strip</strong> — exact contracts, quantities, expected premiums. Click "Modify strikes / qty" to change any parameter. The agent recalculates all metrics instantly after modification.</div></div>
+          <div class="step-item"><div class="step-n">5</div><div class="step-t"><strong>Approve &amp; place button</strong> — the gate. Nothing executes until you tap this. The agent never places orders without your explicit tap. Not on modification, not on watchlist alert, not ever.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:13px;font-weight:500;margin-bottom:9px;color:var(--text)">Kill switch</div>
+    <div class="card">
+      <div class="card-body">
+        <div style="display:flex;align-items:flex-start;gap:11px">
+          <button class="kill-btn" style="cursor:default;flex-shrink:0">KILL SWITCH</button>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">The kill switch in the top bar is your emergency brake. Activating it immediately halts all agent activity — no new orders will be placed and all pending agent actions are cancelled. Your existing positions remain open (the kill switch does not exit positions — use "Exit all" in Positions for that). Use it if you suspect a system error, if market conditions change dramatically, or if you simply want to pause the agent. Always one click away regardless of which screen you're on.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:9px;color:var(--text)">Frequently asked questions</div>
+    <div class="gs-card"><div class="gs-hd" onclick="toggleG(this)"><span class="gs-hd-t">Does the agent ever trade without my approval?</span></div><div class="gs-body"><div style="font-size:11px;color:var(--muted);line-height:1.6"><strong style="color:var(--text)">No, never.</strong> The agent analyses, recommends, and prepares — but execution always requires your explicit tap on the Approve button. The only exception is partial-fill resolution, where the executor may adjust limit prices within ±₹2 on a pending order to complete a fill it has already initiated.</div></div></div>
+    <div class="gs-card"><div class="gs-hd" onclick="toggleG(this)"><span class="gs-hd-t">How does the agent know my risk parameters?</span></div><div class="gs-body"><div style="font-size:11px;color:var(--muted);line-height:1.6">You set them in Strategy Setup. The agent stores your max risk per trade, daily loss limit, preferred instruments, strategy style, and sit-out conditions. Every recommendation is filtered through these rules. Update them anytime — the agent recalibrates immediately.</div></div></div>
+    <div class="gs-card"><div class="gs-hd" onclick="toggleG(this)"><span class="gs-hd-t">What happens if a leg doesn't fill?</span></div><div class="gs-body"><div style="font-size:11px;color:var(--muted);line-height:1.6">The executor monitors fills for 90 seconds. If a leg is unfilled, the agent first adjusts the limit price within ±₹2. If still unfilled after 90s, it alerts you and presents two options: retry at market price, or unwind filled legs to avoid an orphaned position. It will never leave a half-executed strategy without alerting you immediately.</div></div></div>
+    <div class="gs-card"><div class="gs-hd" onclick="toggleG(this)"><span class="gs-hd-t">What does the backtest data come from?</span></div><div class="gs-body"><div style="font-size:11px;color:var(--muted);line-height:1.6">The backtest finds instances in the last 2 years where market conditions (IV percentile, PCR, OI concentration) were similar to today. Win rate and P&L figures reflect actual historical option premium behaviour. The number of occurrences is always shown so you can judge the sample size.</div></div></div>
+  </div>
+</div>
+</div><!-- /content -->
+<div class="chat-bar">
+  <input class="chat-i" id="chat-i" placeholder="Ask agent — 'What's my net delta?' / 'Shift iron condor strikes 50pts wider' / 'Run backtest for short strangle above 80th IV pct'" onkeydown="if(event.key==='Enter')sendChat()">
+  <button class="chat-send" onclick="sendChat()"><svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M1.5 7l11-5-5 11V8L1.5 7z" fill="white"/></svg></button>
+</div>
+</div><!-- /main -->
+</div><!-- /wrap -->
+<!-- MODIFY MODAL -->
+<div class="modal-bg hidden" id="mod-modal" onclick="if(event.target===this)closeMod()">
+  <div class="modal">
+    <div class="modal-t">Modify Iron Condor strikes</div>
+    <div class="modal-s">Agent recalculates metrics after each change.</div>
+    <div class="g2">
+      <div class="modal-f"><label class="modal-l">Sell call strike</label><input class="modal-i" type="text" value="24000" oninput="recalcMod()"></div>
+      <div class="modal-f"><label class="modal-l">Buy call (wing)</label><input class="modal-i" type="text" value="24100" oninput="recalcMod()"></div>
+      <div class="modal-f"><label class="modal-l">Sell put strike</label><input class="modal-i" type="text" value="23500" oninput="recalcMod()"></div>
+      <div class="modal-f"><label class="modal-l">Buy put (wing)</label><input class="modal-i" type="text" value="23400" oninput="recalcMod()"></div>
+    </div>
+    <div class="modal-f"><label class="modal-l">Quantity (lots)</label><input class="modal-i" type="text" value="50" oninput="recalcMod()"></div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:9px 11px;font-size:11px;color:var(--muted)" id="mod-result">Agent recalculating with adjusted strikes...</div>
+    <div style="display:flex;gap:7px;justify-content:flex-end;margin-top:12px">
+      <button class="btn" onclick="closeMod()">Cancel</button>
+      <button class="btn btn-p" onclick="closeMod()">Apply changes</button>
+    </div>
+  </div>
+</div>
+<script>
+const ATM=23800,SBASE=23847;
+let legs=[],killOn=false,curPage='brief';
+let analyticsBuilt=false,ivChartBuilt=false,logsBuilt=false;
+
+const POS=[
+  {sym:'NIFTY24000CE',type:'CE',strike:24000,exp:'27-Apr',act:'SELL',qty:50,avg:86.5,ltp:112.3,delta:.38,theta:-4.2,vega:8.1,iv:15.4,pnl:-1290},
+  {sym:'NIFTY24100CE',type:'CE',strike:24100,exp:'27-Apr',act:'BUY',qty:50,avg:43.2,ltp:68.4,delta:.28,theta:-3.1,vega:6.2,iv:15.1,pnl:1260},
+  {sym:'NIFTY23500PE',type:'PE',strike:23500,exp:'27-Apr',act:'SELL',qty:50,avg:78.0,ltp:52.4,delta:-.12,theta:-3.8,vega:7.4,iv:14.6,pnl:1280},
+  {sym:'NIFTY23400PE',type:'PE',strike:23400,exp:'27-Apr',act:'BUY',qty:50,avg:39.5,ltp:26.1,delta:-.08,theta:-2.4,vega:5.1,iv:14.3,pnl:-670},
+];
+const ORDERS=[
+  {time:'09:18:04',sym:'NIFTY24000CE',act:'SELL',qty:50,exp:86.50,fill:86.40},
+  {time:'09:18:04',sym:'NIFTY24100CE',act:'BUY',qty:50,exp:43.20,fill:43.55},
+  {time:'09:18:05',sym:'NIFTY23500PE',act:'SELL',qty:50,exp:78.00,fill:78.20},
+  {time:'09:18:05',sym:'NIFTY23400PE',act:'BUY',qty:50,exp:39.50,fill:39.75},
+];
+const STRATS={
+  ic:[{act:'SELL',type:'CE',strike:ATM+200,qty:50},{act:'BUY',type:'CE',strike:ATM+300,qty:50},{act:'SELL',type:'PE',strike:ATM-300,qty:50},{act:'BUY',type:'PE',strike:ATM-400,qty:50}],
+  ss:[{act:'SELL',type:'CE',strike:ATM+200,qty:50},{act:'SELL',type:'PE',strike:ATM-300,qty:50}],
+  bcs:[{act:'BUY',type:'CE',strike:ATM,qty:50},{act:'SELL',type:'CE',strike:ATM+200,qty:50}],
+  bps:[{act:'BUY',type:'PE',strike:ATM,qty:50},{act:'SELL',type:'PE',strike:ATM-200,qty:50}],
+  sd:[{act:'SELL',type:'CE',strike:ATM,qty:50},{act:'SELL',type:'PE',strike:ATM,qty:50}],
+  cu:[{act:'BUY',type:'CE',strike:ATM,qty:50}],
+};
+const OC_STK=[ATM-600,ATM-500,ATM-400,ATM-300,ATM-200,ATM-100,ATM,ATM+100,ATM+200,ATM+300,ATM+400,ATM+500,ATM+600];
+const OI_STK=[ATM-400,ATM-300,ATM-200,ATM-100,ATM,ATM+100,ATM+200,ATM+300,ATM+400];
+
+function nCDF(x){const t=1/(1+.2316419*Math.abs(x));const d=.3989423*Math.exp(-.5*x*x);const p=d*t*(.3193815+t*(-.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));return x>0?1-p:p;}
+function bs(S,K,T,r,s,type){if(T<=0)return type==='CE'?Math.max(S-K,0):Math.max(K-S,0);const d1=(Math.log(S/K)+(r+.5*s*s)*T)/(s*Math.sqrt(T));const d2=d1-s*Math.sqrt(T);return type==='CE'?S*nCDF(d1)-K*Math.exp(-r*T)*nCDF(d2):K*Math.exp(-r*T)*nCDF(-d2)-S*nCDF(-d1);}
+function getPrem(l,S){return Math.max(.1,bs(S,l.strike,7/365,.065,.148,l.type));}
+function payAt(S){return legs.reduce((s,l)=>{const ep=getPrem(l,SBASE);const ev=l.type==='CE'?Math.max(S-l.strike,0):Math.max(l.strike-S,0);return s+(l.act==='BUY'?1:-1)*(ev-ep)*l.qty;},0);}
+function fmt(n){return(n>=0?'+₹':'-₹')+Math.abs(Math.round(n)).toLocaleString('en-IN');}
+
+function nav(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-link').forEach(a=>a.classList.remove('on'));
+  const pg=document.getElementById('page-'+name);if(pg)pg.classList.add('on');
+  document.querySelectorAll('.sb-link').forEach(a=>{if((a.getAttribute('onclick')||'').includes("'"+name+"'"))a.classList.add('on');});
+  curPage=name;
+  if(name==='positions')renderPos();
+  if(name==='chain')renderOC();
+  if(name==='oi'){renderOIGrid();buildIVChart();}
+  if(name==='builder'){loadStrat('ic',document.querySelector('#strat-chips .sc.on'));recompute();}
+  if(name==='orders')renderOrders();
+  if(name==='analytics')buildAnalytics();
+  if(name==='logs')buildLogs();
+  window.scrollTo(0,0);
+}
+function toggleKill(){killOn=!killOn;const b=document.getElementById('kill-btn');b.classList.toggle('on',killOn);b.textContent=killOn?'KILL ACTIVE':'KILL SWITCH';}
+
+function renderOC(){
+  const tbody=document.getElementById('oc-body');if(!tbody)return;
+  tbody.innerHTML=OC_STK.map(s=>{
+    const isATM=s===ATM;const dist=Math.abs(s-ATM);
+    const ivBase=14.8+dist/400*.9;
+    const iv_c=(ivBase+(Math.random()-.5)*.3).toFixed(1);
+    const iv_p=(ivBase+(Math.random()-.5)*.3+.4).toFixed(1);
+    const c_p=Math.max(.5,bs(SBASE,s,7/365,.065,parseFloat(iv_c)/100,'CE'));
+    const p_p=Math.max(.5,bs(SBASE,s,7/365,.065,parseFloat(iv_p)/100,'PE'));
+    const cd=(nCDF((Math.log(SBASE/s)+(0.065+.5*.148*.148)*7/365)/(.148*Math.sqrt(7/365)))).toFixed(2);
+    const pd=(parseFloat(cd)-1).toFixed(2);
+    const oi_c=(Math.max(.5,7.5-dist/110)*(1+(Math.random()-.5)*.3)).toFixed(1);
+    const oi_p=(Math.max(.5,7-dist/130)*(1+(Math.random()-.5)*.3)).toFixed(1);
+    const cc=((Math.random()-.4)*1.2).toFixed(1);
+    const pc2=((Math.random()-.4)*1.0).toFixed(1);
+    const wall_c=s===24000||s===24100,wall_p=s===23500||s===23400;
+    return`<tr class="${isATM?'atm':''}">
+      <td class="ce" style="${wall_c?'background:rgba(222,53,11,.05)!important':''}"><div class="oib"><div class="oif oif-c" style="width:${Math.min(95,parseFloat(oi_c)/8*100).toFixed(0)}%"></div><span class="oin oin-c">${oi_c}</span></div></td>
+      <td class="ce ${parseFloat(cc)>0?'up':'dn'}">${cc}</td>
+      <td class="ce">${iv_c}%</td>
+      <td class="ce" style="font-weight:${isATM?600:400}">${c_p.toFixed(1)}</td>
+      <td class="ce" style="color:${parseFloat(cd)<.2?'var(--dim)':'var(--text)'}">${cd}</td>
+      <td class="ce">${(c_p*.98).toFixed(1)}/${(c_p*1.02).toFixed(1)}</td>
+      <td class="sk">${s.toLocaleString('en-IN')}${(wall_c||wall_p)?'<span class="pill pill-a" style="font-size:7px;margin-left:3px">wall</span>':''}${isATM?'<span class="pill pill-b" style="font-size:7px;margin-left:3px">ATM</span>':''}</td>
+      <td class="pe">${(p_p*.98).toFixed(1)}/${(p_p*1.02).toFixed(1)}</td>
+      <td class="pe" style="color:${Math.abs(parseFloat(pd))<.2?'var(--dim)':'var(--text)'}">${pd}</td>
+      <td class="pe" style="font-weight:${isATM?600:400}">${p_p.toFixed(1)}</td>
+      <td class="pe">${iv_p}%</td>
+      <td class="pe ${parseFloat(pc2)>0?'up':'dn'}">${pc2}</td>
+      <td class="pe" style="${wall_p?'background:rgba(0,135,90,.05)!important':''}"><div class="oib"><div class="oif oif-p" style="width:${Math.min(95,parseFloat(oi_p)/8*100).toFixed(0)}%"></div><span class="oin oin-p">${oi_p}</span></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderOIGrid(){
+  const g=document.getElementById('oi-grid');if(!g)return;
+  const maxOI=8;
+  g.innerHTML=`<div class="oi-row"><div class="oi-hdr">Calls (CE)</div><div class="oi-hdr">Strike</div><div class="oi-hdr">Puts (PE)</div></div>`+
+  OI_STK.map(s=>{
+    const d=Math.abs(s-ATM)/50;const base=Math.max(.5,6.5-d*.9);
+    const ce=(base*(1+(Math.random()-.5)*.3)).toFixed(1);
+    const pe=(base*(1+(Math.random()-.5)*.3)).toFixed(1);
+    const cePct=(parseFloat(ce)/maxOI*100).toFixed(0);
+    const pePct=(parseFloat(pe)/maxOI*100).toFixed(0);
+    const isATM=s===ATM;
+    return`<div class="oi-row">
+      <div class="oi-ce"><div class="oi-fr" style="width:${cePct}%"></div><span class="oi-nl oi-nl-r">${ce}L</span></div>
+      <div class="oi-sk ${isATM?'atm':''}">${s.toLocaleString()}</div>
+      <div class="oi-pe"><div class="oi-fl" style="width:${pePct}%"></div><span class="oi-nl oi-nl-l">${pe}L</span></div>
+    </div>`;
+  }).join('');
+}
+
+function buildIVChart(){
+  if(ivChartBuilt)return;ivChartBuilt=true;
+  const ctx=document.getElementById('iv-chart');if(!ctx)return;
+  new Chart(ctx,{type:'line',data:{labels:['27 Apr','04 May','08 May','29 May'],datasets:[{data:[14.8,13.2,12.8,12.1],borderColor:'#FF8B00',backgroundColor:'rgba(255,139,0,.07)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#FF8B00',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9CA3AF',font:{size:9}},grid:{color:'#F0F2F5'}},y:{ticks:{color:'#9CA3AF',font:{size:9},callback:v=>v+'%'},grid:{color:'#F0F2F5'}}}}});
+}
+
+function loadStrat(name,el){
+  document.querySelectorAll('#strat-chips .sc').forEach(b=>b.classList.remove('on'));
+  if(el)el.classList.add('on');
+  legs=(STRATS[name]||[]).map(l=>({...l,exp:7}));
+  renderLegs();recompute();
+}
+function addLeg(){legs.push({act:'BUY',type:'CE',strike:ATM,qty:50,exp:7});renderLegs();recompute();}
+function delLeg(i){legs.splice(i,1);renderLegs();recompute();}
+function renderLegs(){
+  const c=document.getElementById('legs-cont');if(!c)return;
+  c.innerHTML=legs.map((l,i)=>`<div class="leg-row">
+    <select class="li" onchange="legs[${i}].act=this.value;recompute()"><option ${l.act==='BUY'?'selected':''}>BUY</option><option ${l.act==='SELL'?'selected':''}>SELL</option></select>
+    <select class="li" onchange="legs[${i}].type=this.value;recompute()"><option ${l.type==='CE'?'selected':''}>CE</option><option ${l.type==='PE'?'selected':''}>PE</option></select>
+    <input class="li" type="number" value="${l.strike}" step="50" onchange="legs[${i}].strike=+this.value;recompute()">
+    <select class="li"><option>27 Apr</option><option>04 May</option><option>29 May</option></select>
+    <input class="li" type="number" value="${l.qty}" step="1" onchange="legs[${i}].qty=+this.value;recompute()">
+    <button class="del-b" onclick="delLeg(${i})">×</button>
+  </div>`).join('');
+}
+function recompute(){
+  if(!legs.length){['b-profit','b-loss','b-pop','b-theta'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});return;}
+  const pts=[];for(let d=-1800;d<=1800;d+=50)pts.push({x:SBASE+d,y:payAt(SBASE+d)});
+  const maxP=Math.max(...pts.map(p=>p.y));
+  const minP=Math.min(...pts.map(p=>p.y));
+  const theta=legs.reduce((s,l)=>{const p=getPrem(l,SBASE);const p2=Math.max(.1,bs(SBASE,l.strike,6/365,.065,.148,l.type));return s+(l.act==='BUY'?-1:1)*(p-p2)*l.qty;},0);
+  const inProfit=pts.filter(p=>p.y>0).length/pts.length*100;
+  const ep=document.getElementById('b-profit'),el=document.getElementById('b-loss'),ep2=document.getElementById('b-pop'),et=document.getElementById('b-theta');
+  if(ep)ep.textContent=maxP>0?fmt(maxP):'—';
+  if(el)el.textContent=minP<0?fmt(minP):'—';
+  if(ep2)ep2.textContent=inProfit.toFixed(0)+'%';
+  if(et)et.textContent=fmt(theta*30);
+  const en=document.getElementById('exec-note');if(en)en.textContent=`PAPER MODE · ${legs.length} legs`;
+  drawPayoff(pts,maxP,minP);
+}
+function updSlider(v){
+  const el=document.getElementById('slider-out');if(el)el.textContent='₹'+Math.round(v).toLocaleString('en-IN');
+  const ps=document.getElementById('pnl-spot');if(ps)ps.textContent='P&L at ₹'+Math.round(v).toLocaleString('en-IN')+': '+fmt(payAt(+v));
+}
+function drawPayoff(pts,maxP,minP){
+  const canvas=document.getElementById('payoff-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth||600;canvas.height=150;
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const xMin=pts[0].x,xMax=pts[pts.length-1].x;
+  const yMin=Math.min(minP,-50),yMax=Math.max(maxP,50);
+  const xS=W/(xMax-xMin),yS=(H-16)/(yMax-yMin);
+  const toX=x=>(x-xMin)*xS;const toY=y=>H-8-(y-yMin)*yS;
+  const zero=toY(0);
+  ctx.fillStyle='rgba(0,135,90,.05)';ctx.fillRect(0,0,W,zero);
+  ctx.fillStyle='rgba(222,53,11,.05)';ctx.fillRect(0,zero,W,H-zero);
+  ctx.strokeStyle='#E2E4E9';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(0,zero);ctx.lineTo(W,zero);ctx.stroke();ctx.setLineDash([]);
+  const grad=ctx.createLinearGradient(0,0,W,0);
+  pts.forEach((p,i)=>grad.addColorStop(i/(pts.length-1),p.y>=0?'#00875A':'#DE350B'));
+  ctx.beginPath();ctx.lineWidth=2;pts.forEach((p,i)=>i===0?ctx.moveTo(toX(p.x),toY(p.y)):ctx.lineTo(toX(p.x),toY(p.y)));
+  ctx.strokeStyle=grad;ctx.stroke();
+  const spX=toX(SBASE);
+  ctx.strokeStyle='#FF8B00';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(spX,0);ctx.lineTo(spX,H);ctx.stroke();ctx.setLineDash([]);
+}
+function renderPos(){
+  const tbody=document.getElementById('pos-tbody');if(!tbody)return;
+  const totalPnl=POS.reduce((s,p)=>s+p.pnl,0);
+  document.getElementById('day-pnl').textContent=fmt(totalPnl);
+  document.getElementById('day-pnl').className='tb-sv '+(totalPnl>=0?'up':'dn');
+  tbody.innerHTML=POS.map(p=>{
+    const sign=p.act==='SELL'?-1:1;const dv=(sign*p.delta).toFixed(3);
+    return`<tr>
+      <td><div style="font-size:11px;font-weight:500">${p.sym}</div><div style="font-size:9px;color:var(--dim)">${p.type}·${p.exp}</div></td>
+      <td><span class="pill ${p.act==='SELL'?'pill-r':'pill-g'}">${p.act}</span></td>
+      <td class="mono">${p.qty}</td>
+      <td class="mono r">${p.avg.toFixed(1)}</td>
+      <td class="mono r">${p.ltp.toFixed(1)}</td>
+      <td class="mono r ${p.pnl>=0?'up':'dn'}" style="font-weight:600">${fmt(p.pnl)}</td>
+      <td class="mono r ${Math.abs(parseFloat(dv))>.3?'warn':'nu'}">${dv}</td>
+      <td class="mono r up">${(sign*p.theta).toFixed(1)}</td>
+      <td class="mono r">${p.iv}%</td>
+      <td><span class="pill ${p.pnl>=0?'pill-g':'pill-r'}">${p.pnl>=0?'Profit':'Loss'}</span></td>
+      <td><button class="btn btn-xs btn-r">Exit</button></td>
+    </tr>`;
+  }).join('');
+  const nd=POS.reduce((s,p)=>s+(p.act==='SELL'?-1:1)*p.delta*p.qty,0);
+  const nt=POS.reduce((s,p)=>s+(p.act==='SELL'?-1:1)*p.theta*p.qty,0);
+  const nv=POS.reduce((s,p)=>s+(p.act==='SELL'?-1:1)*p.vega*p.qty,0);
+  const gd=document.getElementById('g-delta');if(gd){gd.textContent=nd.toFixed(1);gd.className='gk-v '+(Math.abs(nd)>15?'warn':'nu');}
+  const gt=document.getElementById('g-theta');if(gt)gt.textContent='+₹'+Math.abs(Math.round(nt*30)).toLocaleString('en-IN');
+  const gv=document.getElementById('g-vega');if(gv){gv.textContent=(nv<0?'-':'')+'₹'+Math.abs(Math.round(nv*100)).toLocaleString('en-IN');gv.className='gk-v '+(nv<0?'dn':'up');}
+}
+function renderOrders(){
+  const tbody=document.getElementById('order-tbody');if(!tbody)return;
+  tbody.innerHTML=ORDERS.map(o=>{
+    const sl=+(o.fill-o.exp).toFixed(2);const fav=o.act==='SELL'?sl>0:sl<0;
+    return`<tr>
+      <td class="mono">${o.time}</td>
+      <td style="font-weight:500;font-size:11px">${o.sym}</td>
+      <td style="color:${o.act==='SELL'?'var(--red)':'var(--green)'};font-weight:500">${o.act}</td>
+      <td class="mono">${o.qty}</td>
+      <td class="mono r">${o.exp.toFixed(2)}</td>
+      <td class="mono r">${o.fill.toFixed(2)}</td>
+      <td class="mono r ${fav?'up':'dn'}">${sl>=0?'+':''}${sl.toFixed(2)}</td>
+      <td><span class="pill pill-g">Filled</span></td>
+      <td style="font-size:10px;color:var(--blue)">Agent</td>
+    </tr>`;
+  }).join('');
+}
+function buildAnalytics(){
+  if(analyticsBuilt)return;analyticsBuilt=true;
+  const ctx=document.getElementById('pnl-chart');if(!ctx)return;
+  new Chart(ctx,{type:'line',data:{labels:['Entry','30m','1h','2h','4h','Close'],datasets:[{data:[0,420,980,1640,2350,3750],borderColor:'#00875A',backgroundColor:'rgba(0,135,90,.07)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#00875A',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#E2E4E9',borderWidth:1,titleColor:'#6B7280',bodyColor:'#1A1D2E',callbacks:{label:i=>'P&L: '+fmt(i.raw)}}},scales:{x:{ticks:{color:'#9CA3AF',font:{size:9}},grid:{color:'#F0F2F5'}},y:{ticks:{color:'#9CA3AF',font:{size:9},callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#F0F2F5'}}}}});
+  const tl=document.getElementById('analytics-tl');if(!tl)return;
+  const ev=[
+    {d:'d-b',t:'08:47 AM',ti:'Scanner — morning brief',ds:'2 setups identified. Iron Condor high conviction.'},
+    {d:'d-p',t:'09:04 AM',ti:'Strategist — Iron Condor proposed',ds:'Backtest: 67% win rate · 43 occurrences · ₹42K margin.'},
+    {d:'d-a',t:'09:17 AM',ti:'User approved · no modifications',ds:'Executor triggered for basket placement.'},
+    {d:'d-g',t:'09:18 AM',ti:'Executor — 4 legs filled in 1.2s',ds:'Slippage ₹0.40 adverse. No partial fills.'},
+    {d:'d-r',t:'11:23 AM',ti:'Monitor — delta breach alert',ds:'24000 CE delta 0.38 > threshold 0.35. 3 adjustments proposed.'},
+    {d:'d-a',t:'11:31 AM',ti:'User approved: roll call side up',ds:'Cost ₹1,250. New delta 0.18. Position stabilised.'},
+  ];
+  tl.innerHTML=ev.map((e,i)=>`<div class="tl-item"><div class="tl-left"><div class="tl-dot ${e.d}"></div>${i<ev.length-1?'<div class="tl-line"></div>':''}</div><div class="tl-right"><div class="tl-t">${e.t}</div><div class="tl-ti">${e.ti}</div><div class="tl-d">${e.ds}</div></div></div>`).join('');
+}
+function buildLogs(){
+  if(logsBuilt)return;logsBuilt=true;
+  const tl=document.getElementById('logs-tl');if(!tl)return;
+  const ev=[
+    {d:'d-b',t:'08:47 AM',ti:'Scanner · Pre-market synthesis complete',ds:'SGX Nifty +0.1%, IV at 76th pct, OI snapshot processed. 2 setups identified. Morning brief generated.'},
+    {d:'d-p',t:'09:04 AM',ti:'Strategist · Iron Condor recommendation generated',ds:'Strikes: 24000 CE (OI 8.2L, delta 0.22) and 23500 PE (OI 7.8L, delta -0.18). Backtest: 43 occurrences, 67% win rate. Margin ₹42K — within user ₹50K limit.'},
+    {d:'d-a',t:'09:17 AM',ti:'User approved recommendation · no modifications',ds:'Approve & place tapped. Executor triggered with basket parameters.'},
+    {d:'d-g',t:'09:18:04 AM',ti:'Executor · SELL NIFTY24000CE ×50 @ 86.40 · Filled',ds:'Expected 86.50. Slippage +₹0.10 (favourable).'},
+    {d:'d-g',t:'09:18:04 AM',ti:'Executor · BUY NIFTY24100CE ×50 @ 43.55 · Filled',ds:'Expected 43.20. Slippage -₹0.35 (adverse).'},
+    {d:'d-g',t:'09:18:05 AM',ti:'Executor · SELL NIFTY23500PE ×50 @ 78.20 · Filled',ds:'Expected 78.00. Slippage +₹0.20 (favourable).'},
+    {d:'d-g',t:'09:18:05 AM',ti:'Executor · BUY NIFTY23400PE ×50 @ 39.75 · Filled',ds:'Expected 39.50. Slippage -₹0.25. All 4 legs filled. Strategy live.'},
+    {d:'d-b',t:'10:15 AM',ti:'Monitor · Position check — all nominal',ds:'Delta -10.2 (within range). Theta collecting. Nifty 23,880. No alerts triggered.'},
+    {d:'d-r',t:'11:23 AM',ti:'Monitor · ALERT — Delta breach on 24000 CE',ds:'Delta drifted 0.22 → 0.38. Threshold 0.35 exceeded. Nifty at 23,920. 3 adjustment options modelled and presented.'},
+    {d:'d-a',t:'11:31 AM',ti:'User selected Adjustment 1 · Roll call side up',ds:'Approved. Executor triggered. Buy back 24000 CE + sell 24200 CE.'},
+    {d:'d-g',t:'11:32 AM',ti:'Executor · Adjustment executed · 2 orders placed',ds:'Both filled in 0.8s. New delta 0.18. Position stabilised.'},
+    {d:'d-b',t:'03:18 PM',ti:'Monitor · Session closed · All positions exited by user',ds:'Net P&L +₹1,240. Late exit logged (18 min past 3 PM cutoff). Journal generated.'},
+  ];
+  tl.innerHTML=ev.map((e,i)=>`<div class="tl-item"><div class="tl-left"><div class="tl-dot ${e.d}"></div>${i<ev.length-1?'<div class="tl-line"></div>':''}</div><div class="tl-right"><div class="tl-t">${e.t}</div><div class="tl-ti">${e.ti}</div><div class="tl-d">${e.ds}</div></div></div>`).join('');
+}
+function selRec(n){document.querySelectorAll('.sp-card').forEach(c=>{if(c.id)c.classList.toggle('sel',c.id==='rec-'+n);});}
+function selAdj(n){document.querySelectorAll('.adj-opt').forEach(o=>o.classList.remove('sel'));const e=document.getElementById('adj-'+n);if(e)e.classList.add('sel');}
+function selOb(el){document.querySelectorAll('.ob-opt').forEach(o=>{o.classList.remove('sel');o.querySelector('.ob-chk').textContent='';});el.classList.add('sel');el.querySelector('.ob-chk').textContent='✓';}
+function showAdj(){document.getElementById('adj-alert').style.display='none';document.getElementById('adj-panel').classList.remove('hidden');}
+function hideAdj(){document.getElementById('adj-panel').classList.add('hidden');document.getElementById('adj-alert').style.display='none';}
+function openModify(){document.getElementById('mod-modal').classList.remove('hidden');}
+function closeMod(){document.getElementById('mod-modal').classList.add('hidden');}
+function recalcMod(){const e=document.getElementById('mod-result');if(e)e.innerHTML='Agent recalculated: Max profit <strong style="color:var(--green)">₹7,800</strong> · Win prob <strong>64%</strong> · Margin <strong>₹48,000</strong>';}
+function approvePlace(){nav('orders');}
+function runBacktest(){const p=document.getElementById('bt-panel');if(p)p.classList.remove('hidden');}
+function setSym(el){document.querySelectorAll('#page-chain .sc:not(.btn-sm)').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderOC();}
+function setExp(el){document.querySelectorAll('#page-chain .btn-sm').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+function sendChat(){const i=document.getElementById('chat-i');if(i)i.value='';}
+function toggleG(hd){const b=hd.nextElementSibling;if(b)b.classList.toggle('open');}
+function tick(){const n=new Date();const e=document.getElementById('clock');if(e)e.textContent=n.toLocaleTimeString('en-IN',{hour12:false,hour:'2-digit',minute:'2-digit'});}
+// INIT
+renderPos();renderOrders();renderOC();renderOIGrid();
+loadStrat('ic',document.querySelector('#strat-chips .sc.on'));
+recompute();
+setInterval(tick,1000);tick();
+</script>
+</body>
+</html>
