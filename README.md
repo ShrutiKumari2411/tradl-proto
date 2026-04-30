@@ -1,6 +1,7 @@
 # Sensibull — Agentic F&O Platform
 
-**[→ Open prototype](https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/sensibull-agentic-v2.html)**
+**[→ Open prototype](https://github.com/ShrutiKumari2411/tradl-proto/blob/main/sensibull-agentic-v2.html)**
+
 
 A working prototype exploring what Sensibull would look like with a Level 3 agentic layer on top. The premise: the problem facing active FnO traders is not a lack of data — it's too many irreversible decisions under time pressure, made across fragmented tools with no institutional memory. The agent's job is to shrink the decision surface, not expand it.
 
