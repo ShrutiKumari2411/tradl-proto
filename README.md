@@ -5,8 +5,6 @@
 
 A working prototype exploring what Sensibull would look like with a Level 3 agentic layer on top. The premise: the problem facing active FnO traders is not a lack of data — it's too many irreversible decisions under time pressure, made across fragmented tools with no institutional memory. The agent's job is to shrink the decision surface, not expand it.
 
-Built as a product design assignment for [Tradl](https://tradl.in/).
-
 ---
 
 ## The research behind it
@@ -28,7 +26,7 @@ Full design thinking is documented in `tradl-design-thinking.docx`.
 | File | What it is |
 |---|---|
 | `sensibull-agentic-v2.html` | The fully interactive prototype — open in any browser |
-| `tradl-design-thinking.docx` | Full design document — research, competitive audit, gap analysis, design principles, screen-by-screen reasoning |
+| `design-thinking.docx` | Full design document — research, competitive audit, gap analysis, design principles, screen-by-screen reasoning |
 
 ---
 
